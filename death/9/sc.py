@@ -9,7 +9,7 @@ def Run(i):
 
 def main():
     # loom = ProcessLoom(max_runner_cap = 8)
-    for i in range(7):
+    for i in range(3):
         print(200 * '*')
         print(i)
         Run(i)
