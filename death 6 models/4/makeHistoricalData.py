@@ -35,9 +35,9 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         imputer = KNNImputer(n_neighbors=5)
         imp=imputer.fit_transform(X)
         imp=pd.DataFrame(imp)
-        imp.columns=temp.columns
+        imp.columns=temp.iloc[:,-len(imp.columns):].columns
         imp.index=temp.index
-        for i in data['date'].unique():
+        for i in imp.columns:
             data.loc[data['date']==i,feature]=imp[i].tolist()
         if(len(counties_with_all_nulls)>0):
             data.loc[data['county_fips'].isin(counties_with_all_nulls.index),feature]=np.NaN
