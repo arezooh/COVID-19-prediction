@@ -5,6 +5,7 @@ import time
 from sklearn.impute import SimpleImputer
 from sklearn.impute import KNNImputer
 import requests
+from zipfile import ZipFile
 
 ######################################################################### NEW RANK CORRECTED
 # h is the number of days before day (t)
@@ -91,8 +92,15 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     
     ##################################################################### imputation
 #     get_updated_covid_data(address)
+
+    zipFileName = address + 'temporal-data.zip'
+    #####################################################################
+    temporal_address = 'temporal-data' + '.csv'
+    with ZipFile(zipFileName, 'r') as zip:
+        temporal_file = zip.extract(temporal_address)
+    timeDeapandantData = pd.read_csv(temporal_file)
     independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
-    timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
+    # timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
     
     timeDeapandantData['weekend']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
     timeDeapandantData['weekend']=timeDeapandantData['weekend'].apply(lambda x:x.weekday())
@@ -192,7 +200,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%m/%d/%y'))
         social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
         timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
-
+    timeDeapandantData.to_csv('dailydata.csv')
     ##################################################################### cumulative mode
     
     
