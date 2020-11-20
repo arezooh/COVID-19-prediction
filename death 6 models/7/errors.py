@@ -10,7 +10,7 @@ def main():
     predictions = {i:template for i in methods}
     for method in methods:
         for i in range(7):
-            maxHistory = min((14 * 7 - ((2*r)-7) - ((int(i) - 6) * 7)), 5 * 7)
+            maxHistory = min((14 * 9 - ((2*r)-7) - ((int(i) - 6) * 7)), 5 * 7)
             address = './'+str(i)+'/results/counties=1535 max_history='+str(maxHistory)+'/test/all_errors/' + method + '/all_errors_'+method+'.csv'
             temp = pd.read_csv(address)
             predictions[method]=predictions[method].append(temp)
