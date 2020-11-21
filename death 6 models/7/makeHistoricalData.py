@@ -180,7 +180,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         timeDeapandantData = country_aggregate(timeDeapandantData)
 
     if mobility_flag:
-        mobility=pd.read_csv(address+'Global_mobility_Report.csv')
+        mobility=pd.read_csv(address+'Global_Mobility_Report.csv')
         mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
         mobility=mobility[['date',
                'retail_and_recreation_percent_change_from_baseline',
