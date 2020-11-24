@@ -54,7 +54,7 @@ test_size = 21
 maxHistory = min((19 * 7 - (r) - ((int(argv[1]) - 6) * 7)), 5 * 7)
 maxC = 100  # maximum number of covariates to be considered
 
-data_address = '../data/'
+data_address = 'data/'
 
 
 ######################################################### split data to train, val, test
