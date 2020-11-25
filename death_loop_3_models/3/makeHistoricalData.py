@@ -600,7 +600,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         previous_r = r-i
         previous_r_test_point = end_date + i
         previous_r_test_point_maxh = int(min((19 - (previous_r) - (int(previous_r_test_point) - 6)), 5))
-        previous_r_root = '../'+str(previous_r)+'/'+str(previous_r_test_point)+'/results/counties=1535 max_history='+str(previous_r_test_point_maxh)+'/'
+        previous_r_root = './'+str(previous_r)+'/'+str(previous_r_test_point)+'/results/counties=1535 max_history='+str(previous_r_test_point_maxh)+'/'
         temp_data = pd.read_csv(previous_r_root + 'validation/tables/tabel_of_best_validation_results.csv')
         previous_r_val_result = temp_data.loc[(temp_data['method']=='KNN')| (temp_data['method']=='GBM') | (temp_data['method']=='NN')]
         best_error = previous_r_val_result['percentage of absolute error'].min()
