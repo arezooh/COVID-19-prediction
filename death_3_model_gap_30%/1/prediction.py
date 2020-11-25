@@ -51,7 +51,7 @@ push_flag = 0
 # the default values are |test_set| = |val_set| = r, |train_set| = the remaining days
 test_size = 21
 # maxHistory = 2 * 7
-maxHistory = min((15 * 7 - ((2*r)-7) - ((int(argv[1]) - 6) * 7)), 5 * 7)/7
+maxHistory = min((14 * 7 - ((2*r)-7) - ((int(argv[1]) - 6) * 7)), 5 * 7)/7
 maxC = 100  # maximum number of covariates to be considered
 
 
