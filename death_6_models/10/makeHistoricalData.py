@@ -599,8 +599,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
 
 def main():
-    h = 1
-    r = 6
+    h = 0
+    r = 4
     target = 'death'
     feature_selection = 'mrmr'
     spatial_mode = 'country'
