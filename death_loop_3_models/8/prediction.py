@@ -1,5 +1,6 @@
 from makeHistoricalData import makeHistoricalData
 from models import GBM, GLM, KNN, NN, MM_GLM, GBM_grid_search, NN_grid_search, MM_NN
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -1204,7 +1205,6 @@ def main(maxHistory):
     target_name = 'death'
     base_data = makeHistoricalData(0, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, data_address,
                                    future_features, pivot, int(argv[1]))
-    base_data.to_csv('./' + str(argv[1]) + '/' + 'data.csv')
     print("base data before clean shape: ", base_data.shape)
     base_data_before_clean_columns = base_data.columns.values
     base_data = clean_data(base_data, numberOfSelectedCounties, spatial_mode)
@@ -1590,13 +1590,13 @@ if __name__ == "__main__":
             force_features.append('future-' + future_features[f])
 
     # make directories for saving the results
-    validation_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    validation_address = './' + str(r) + '/' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/validation/'
-    test_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    test_address = './' + str(r) + '/' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/test/'
-    env_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    env_address = './' + str(r) + '/' +  str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/session_parameters/'
-    mail_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    mail_address = './' + str(r) + '/' +  str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/email'
 
     if not os.path.exists(mail_address):
