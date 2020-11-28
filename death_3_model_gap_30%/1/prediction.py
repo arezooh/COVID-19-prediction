@@ -54,7 +54,7 @@ test_size = 21
 maxHistory = min((14 * 7 - ((2*r)-7) - ((int(argv[1]) - 6) * 7)), 5 * 7)
 maxC = 100  # maximum number of covariates to be considered
 
-
+data_address = '../data'
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     numberOfCounties = len(main_data['county_fips'].unique())
@@ -394,7 +394,7 @@ def get_best_loss_mode(counties_best_loss_list):
 ########################################################### generate data for best h and c
 
 def generate_data(h, numberOfCovariates, covariates_names, numberOfSelectedCounties):
-    data = makeHistoricalData(h, r, test_size, 'death', 'mrmr', spatial_mode, target_mode, './', future_features, pivot, int(argv[1]))
+    data = makeHistoricalData(h, r, test_size, 'death', 'mrmr', spatial_mode, target_mode, data_address, future_features, pivot, int(argv[1]))
     data = clean_data(data, numberOfSelectedCounties, spatial_mode)
 
     X_train, X_test, y_train, y_test = preprocess(data, spatial_mode, 0)
@@ -561,10 +561,10 @@ def real_prediction_plot(df, r, test_size, target_name, target_mode, best_h, max
 
         method_prediction_df = df[method]  # this df contain real and predicted target values
         if pivot == 'county':
-            county_name_df = pd.read_csv('./' + 'fixed-data.csv')[
+            county_name_df = pd.read_csv(data_address + 'fixed-data.csv')[
                 ['county_fips', 'county_name']]  # we need county names for plot label
         elif pivot == 'state':
-            county_name_df = pd.read_csv('./' + 'fixed-data.csv')[
+            county_name_df = pd.read_csv(data_address + 'fixed-data.csv')[
                 ['state_fips', 'state_name']]  # we need county names for plot label
             county_name_df.rename(columns={'state_fips': 'county_fips', 'state_name': 'county_name'},
                                   inplace=True)
@@ -665,7 +665,7 @@ def get_errors(h, c, method, y_prediction, y_prediction_train, y_test_date, y_tr
     # in validation mode we read regular data in main function and passed to get_error to avoid redundancy
     # but in test mode its not possible because each method has different h(best_h)
     if mode == 'test':
-        regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', './',
+        regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', data_address,
                                           future_features, pivot, int(argv[1]))
         regular_data = clean_data(regular_data, numberOfSelectedCounties, spatial_mode)
         temp_1, temp_2, regular_y_train_date, regular_y_test_date = preprocess(regular_data, spatial_mode, 0)
@@ -1199,9 +1199,8 @@ def main(maxHistory):
     # none_mixed_methods = ['GBM']
     mixed_methods = ['MM_GLM', 'MM_NN']
     target_name = 'death'
-    base_data = makeHistoricalData(0, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, './',
+    base_data = makeHistoricalData(0, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, data_address,
                                    future_features, pivot, int(argv[1]))
-    base_data.to_csv('./' + str(argv[1]) + '/' + 'data.csv')
     print("base data before clean shape: ", base_data.shape)
     base_data_before_clean_columns = base_data.columns.values
     base_data = clean_data(base_data, numberOfSelectedCounties, spatial_mode)
@@ -1251,7 +1250,7 @@ def main(maxHistory):
     for h in history:
         print(100 * "#")
         print("h =", h)
-        data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, './',
+        data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, data_address,
                                   future_features, pivot, int(argv[1]))
         print("data before clean shape:", data.shape)
         # pre-process and split the data, 'date's have dates info
@@ -1275,7 +1274,7 @@ def main(maxHistory):
 
         if target_mode not in ['regular',
                                'weeklyaverage']:  # we need regular data to return predicted values to first state
-            regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', './',
+            regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', data_address,
                                               future_features, pivot, int(argv[1]))
             regular_data = clean_data(regular_data, numberOfSelectedCounties, spatial_mode)
         else:
