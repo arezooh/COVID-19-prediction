@@ -54,7 +54,7 @@ test_size = 21
 maxHistory = min((14 * 7 - ((2*r)-7) - ((int(argv[1]) - 6) * 7)), 5 * 7)
 maxC = 100  # maximum number of covariates to be considered
 
-data_address = '../data'
+data_address = '../data/'
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     numberOfCounties = len(main_data['county_fips'].unique())
