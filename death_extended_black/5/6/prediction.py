@@ -1574,7 +1574,7 @@ if __name__ == "__main__":
     begin = time.time()
 
 
-    if maxH < 1:
+    if maxHistory < 1:
         print('Maximum History Must Be Positive!')
         sys.exit()
 
