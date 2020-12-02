@@ -90,12 +90,12 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 #             y_test = target.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train_val = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        X_train_train = main_data.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
+        X_train_val = main_data.iloc[:-((test_size) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        X_train_train = main_data.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train_val = target.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        y_train_train = target.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
+        y_train_val = target.iloc[:-((test_size) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        y_train_train = target.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
 
         return X_train_train, X_train_val, X_test, y_train_train, y_train_val, y_test
 
@@ -109,10 +109,10 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].copy()
+        X_train = main_data.iloc[:-((test_size) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train = target.iloc[:-((test_size + r-1) * numberOfCounties)]
+        y_train = target.iloc[:-((test_size) * numberOfCounties)]
 
         return X_train, X_test, y_train, y_test
 
@@ -1536,7 +1536,7 @@ def main(maxHistory):
         push('logs of h=' + str(h) + ' added')
 
         # we run test if none of models have improved in curent h or if we passed half of maxhistory
-        if (number_of_improved_methods == 0) or (h == maxHistory // 2):  ###########################
+        if (number_of_improved_methods == -1):  ###########################
             print('jump to test process')
             test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
                          historical_X_test, historical_y_train_date, historical_y_test_date, best_loss, \
