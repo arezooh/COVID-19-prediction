@@ -14,7 +14,7 @@ def main():
             print('r =', r, ', test_point =', test_point)
             Run(r, test_point)
     else:
-        for r in range(1, 10 + int(argv[1])):
+        for r in range(1, 11 + int(argv[1])):
             test_point = 10 - r + int(argv[1])
             print(100*'*')
             print('r =', r, ', test_point =', test_point)
