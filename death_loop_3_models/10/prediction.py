@@ -90,12 +90,12 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 #             y_test = target.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train_val = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        X_train_train = main_data.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
+        X_train_val = main_data.iloc[:-((test_size) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        X_train_train = main_data.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train_val = target.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        y_train_train = target.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
+        y_train_val = target.iloc[:-((test_size) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        y_train_train = target.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
 
         return X_train_train, X_train_val, X_test, y_train_train, y_train_val, y_test
 
@@ -109,10 +109,10 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].copy()
+        X_train = main_data.iloc[:-((test_size) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train = target.iloc[:-((test_size + r-1) * numberOfCounties)]
+        y_train = target.iloc[:-((test_size) * numberOfCounties)]
 
         return X_train, X_test, y_train, y_test
 
