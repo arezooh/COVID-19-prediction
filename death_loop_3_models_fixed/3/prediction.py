@@ -1536,7 +1536,7 @@ def main(maxHistory):
         push('logs of h=' + str(h) + ' added')
 
         # we run test if none of models have improved in curent h or if we passed half of maxhistory
-        if (number_of_improved_methods == 0) or (h == maxHistory // 2):  ###########################
+        if (number_of_improved_methods == -1):  ###########################
             print('jump to test process')
             test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
                          historical_X_test, historical_y_train_date, historical_y_test_date, best_loss, \
