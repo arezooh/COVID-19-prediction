@@ -55,7 +55,7 @@ test_size = 21
 maxHistory = min((19 * 7 - (r + base_r -7) - ((int(argv[1]) - 6) * 7)), 5 * 7)
 maxC = 100  # maximum number of covariates to be considered
 
-data_address = (os.path.dirname(os.path.dirname(os.getcwd()))+'/data/').replace('\\','/')
+data_address = '../data/'
 
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
@@ -1536,7 +1536,7 @@ def main(maxHistory):
         push('logs of h=' + str(h) + ' added')
 
         # we run test if none of models have improved in curent h or if we passed half of maxhistory
-        if (number_of_improved_methods == 0) or (h == maxHistory // 2):  ###########################
+        if (number_of_improved_methods == -1):  ###########################
             print('jump to test process')
             test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
                          historical_X_test, historical_y_train_date, historical_y_test_date, best_loss, \
@@ -1597,13 +1597,13 @@ if __name__ == "__main__":
             force_features.append('future-' + future_features[f])
 
     # make directories for saving the results
-    validation_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    validation_address = './' + str(r) + '/' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/validation/'
-    test_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    test_address = './' + str(r) + '/' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/test/'
-    env_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    env_address = './' + str(r) + '/' +  str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/session_parameters/'
-    mail_address = './' + str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
+    mail_address = './' + str(r) + '/' +  str(argv[1]) + '/' + 'results/counties=' + str(numberOfSelectedCountiesname) + ' max_history=' + str(
         maxHistory) + '/email'
 
     if not os.path.exists(mail_address):

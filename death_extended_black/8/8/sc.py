@@ -8,7 +8,7 @@ base_r = 8
 r = 8
 
 def Run(i):
-    subprocess.call("python ./prediction.py "+str(i), shell=True)
+    subprocess.call("python ./"+ str(r) +"/prediction.py "+str(i), shell=True)
 
 def main():
     for i in range(19 - base_r - r + 7):
