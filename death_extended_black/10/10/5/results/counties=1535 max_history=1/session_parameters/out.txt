@@ -1,0 +1,432 @@
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 1 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 1 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 1 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 1 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 1 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 1 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 1 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 1 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 1 : 316.02
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 1 : 27.76
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 1 : 316.02
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 1 : 1.28
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 1 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 1 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 1 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 1 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 1 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 1 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 1 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 1 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 1 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 1 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 1 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 1 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 2 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 2 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 2 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 2 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 2 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 2 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 2 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 2 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 2 : 296.75
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 2 : 26.07
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 2 : 296.75
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 2 : 1.20
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 2 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 2 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 2 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 2 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 2 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 2 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 2 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 2 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 2 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 2 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 2 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 2 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 3 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 3 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 3 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 3 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 3 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 3 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 3 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 3 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 3 : 296.75
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 3 : 26.07
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 3 : 296.75
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 3 : 1.20
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 3 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 3 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 3 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 3 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 3 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 3 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 3 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 3 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 3 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 3 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 3 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 3 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 3 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 4 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 4 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 4 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 4 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 4 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 4 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 4 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 4 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 4 : 296.76
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 4 : 26.07
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 4 : 296.76
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 4 : 1.20
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 4 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 4 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 4 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 4 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 4 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 4 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 4 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 4 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 4 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 4 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 4 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 4 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 4 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 5 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 5 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 5 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 5 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 5 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 5 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 5 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 5 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 5 : 296.76
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 5 : 26.07
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 5 : 296.76
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 5 : 1.20
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 5 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 5 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 5 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 5 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 5 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 5 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 5 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 5 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 5 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 5 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 5 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 5 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 5 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 6 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 6 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 6 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 6 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 6 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 6 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 6 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 6 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 6 : 299.25
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 6 : 26.29
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 6 : 299.25
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 6 : 1.21
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 6 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 6 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 6 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 6 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 6 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 6 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 6 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 6 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 6 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 6 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 6 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 6 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 6 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 7 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 7 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 7 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 7 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 7 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 7 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 7 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 7 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 7 : 299.25
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 7 : 26.29
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 7 : 299.25
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 7 : 1.21
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 7 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 7 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 7 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 7 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 7 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 7 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 7 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 7 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 7 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 7 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 7 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 7 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 7 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 8 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 8 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 8 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 8 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 8 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 8 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 8 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 8 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 8 : 316.90
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 8 : 27.84
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 8 : 316.90
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 8 : 1.28
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 8 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 8 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 8 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 8 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 8 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 8 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 8 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 8 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 8 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 8 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 8 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 8 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 8 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 9 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 9 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 9 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 9 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 9 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 9 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 9 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 9 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 9 : 316.90
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 9 : 27.84
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 9 : 316.90
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 9 : 1.28
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 9 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 9 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 9 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 9 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 9 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 9 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 9 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 9 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 9 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 9 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 9 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 9 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 9 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 10 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 10 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 10 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 10 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 10 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 10 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 10 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 10 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 10 : 316.91
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 10 : 27.84
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 10 : 316.91
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 10 : 1.28
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 10 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 10 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 10 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 10 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 10 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 10 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 10 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 10 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 10 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 10 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 10 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 10 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 10 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 11 : 1137.43
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 11 : 99.91
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 11 : 1137.43
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 11 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 11 : 1137.43
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 11 : 99.91
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 11 : 1137.43
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 11 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 11 : 316.91
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 11 : 27.84
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 11 : 316.91
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 11 : 1.28
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 11 : 1137.43
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 11 : 99.91
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 11 : 1137.43
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 11 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 11 : 1137.43
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 11 : 99.91
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 11 : 1137.43
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 11 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 11 : 1137.43
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 11 : 99.91
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 11 : 1137.43
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 11 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 11 : 4.61
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GBM  for h = 1 and #covariates = 1 : 714.29
+Percentage of Absolute Error of  GBM  for h = 1 and #covariates = 1 : 99.86
+Root Mean Squared Error of  GBM  for h = 1 and #covariates = 1 : 714.29
+Adjusted R Squared Error of  GBM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  GBM  for h = 1 and #covariates = 1 : 3.07
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  GLM  for h = 1 and #covariates = 1 : 714.29
+Percentage of Absolute Error of  GLM  for h = 1 and #covariates = 1 : 99.86
+Root Mean Squared Error of  GLM  for h = 1 and #covariates = 1 : 714.29
+Adjusted R Squared Error of  GLM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  GLM  for h = 1 and #covariates = 1 : 3.07
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  KNN  for h = 1 and #covariates = 2 : 46.31
+Percentage of Absolute Error of  KNN  for h = 1 and #covariates = 2 : 6.47
+Root Mean Squared Error of  KNN  for h = 1 and #covariates = 2 : 46.31
+Adjusted R Squared Error of  KNN  for h = 1 and #covariates = 2 : 1.00
+MASE Error of  KNN  for h = 1 and #covariates = 2 : 0.20
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  NN  for h = 1 and #covariates = 1 : 714.29
+Percentage of Absolute Error of  NN  for h = 1 and #covariates = 1 : 99.86
+Root Mean Squared Error of  NN  for h = 1 and #covariates = 1 : 714.29
+Adjusted R Squared Error of  NN  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  NN  for h = 1 and #covariates = 1 : 3.07
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_GLM  for h = 1 and #covariates = 1 : 714.29
+Percentage of Absolute Error of  MM_GLM  for h = 1 and #covariates = 1 : 99.86
+Root Mean Squared Error of  MM_GLM  for h = 1 and #covariates = 1 : 714.29
+Adjusted R Squared Error of  MM_GLM  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  MM_GLM  for h = 1 and #covariates = 1 : 3.07
+-----------------------------------------------------------------------------------------
+Mean Absolute Error of  MM_NN  for h = 1 and #covariates = 1 : 714.29
+Percentage of Absolute Error of  MM_NN  for h = 1 and #covariates = 1 : 99.86
+Root Mean Squared Error of  MM_NN  for h = 1 and #covariates = 1 : 714.29
+Adjusted R Squared Error of  MM_NN  for h = 1 and #covariates = 1 : 1.00
+MASE Error of  MM_NN  for h = 1 and #covariates = 1 : 3.07
+-----------------------------------------------------------------------------------------
