@@ -41,7 +41,7 @@ tf.random.set_seed(1)
 plt.rcParams.update({'figure.max_open_warning': 0})
 
 pivot = 'country'
-r = 2 * 7  # the following day to predict
+r = 10 * 7  # the following day to predict
 numberOfSelectedCounties = -1
 target_mode = 'weeklyaverage'
 spatial_mode = 'country'

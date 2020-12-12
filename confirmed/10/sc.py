@@ -4,7 +4,7 @@ import os
 import subprocess
 from pexecute.process import ProcessLoom
 
-r = 4
+r = 10
 
 def Run(i):
     subprocess.call("python ./prediction.py "+str(i), shell=True)
