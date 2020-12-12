@@ -54,7 +54,7 @@ test_size = 21
 maxHistory = (13 * 7 - ((2*r)-7))
 maxC = 100  # maximum number of covariates to be considered
 
-data_address = '../data/'
+data_address = (os.path.dirname(os.path.dirname(os.getcwd()))+'/data/').replace('\\','/')
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     numberOfCounties = len(main_data['county_fips'].unique())
@@ -72,19 +72,7 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
         val_size = round(0.3 * (baseNumberOfDays - test_size))
 
     if mode == 'val':
-#         if not future_mode:  # the default state
-#             X_train_train = main_data.iloc[:-2 * (r * numberOfCounties), :].sort_values(
-#                 by=['county_fips', 'date of day t'])
-#             X_train_val = main_data.iloc[-2 * (r * numberOfCounties):-(r * numberOfCounties), :].sort_values(
-#                 by=['county_fips', 'date of day t'])
-#             X_test = main_data.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
 
-#             y_train_train = target.iloc[:-2 * (r * numberOfCounties), :].sort_values(
-#                 by=['county_fips', 'date of day t'])
-#             y_train_val = target.iloc[-2 * (r * numberOfCounties):-(r * numberOfCounties), :].sort_values(
-#                 by=['county_fips', 'date of day t'])
-#             y_test = target.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
-#         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
         X_train_val = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
         X_train_train = main_data.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
@@ -96,14 +84,7 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
         return X_train_train, X_train_val, X_test, y_train_train, y_train_val, y_test
 
     if mode == 'test':
-#         if not future_mode:
-#             X_train = main_data.iloc[:-(r * numberOfCounties), :].sort_values(by=['county_fips', 'date of day t'])
-#             X_test = main_data.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
 
-#             y_train = target.iloc[:-(r * numberOfCounties), :].sort_values(by=['county_fips', 'date of day t'])
-#             y_test = target.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
-
-#         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
         X_train = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].copy()
 
@@ -1125,15 +1106,15 @@ def test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h
 
         y_test_MM_dict[mixed_method] = np.array(y_test_MM_dict[mixed_method]['Target']).reshape(-1)
         y_train_MM_dict[mixed_method] = np.array(y_train_MM_dict[mixed_method]['Target']).reshape(-1)
-    # save the entire session
-    filename = env_address + 'test.out'
-    my_shelf = shelve.open(filename, 'n')  # 'n' for new
-    for key in dir():
-        try:
-            my_shelf[key] = locals()[key]
-        except:
-            print('ERROR shelving: {0}'.format(key))
-    my_shelf.close()
+#     # save the entire session
+#     filename = env_address + 'test.out'
+#     my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#     for key in dir():
+#         try:
+#             my_shelf[key] = locals()[key]
+#         except:
+#             print('ERROR shelving: {0}'.format(key))
+#     my_shelf.close()
     # mixed model with linear regression and neural network
     MM_GLM, MM_NN = run_mixed_models(X_train_MM_dict, X_test_MM_dict, y_train_MM_dict, y_test_MM_dict, best_loss)
     y_prediction['MM_GLM'], y_prediction_train['MM_GLM'] = MM_GLM
@@ -1174,19 +1155,19 @@ def test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h
     # mail the test results
     selected_for_email = [test_address + '/tables', test_address + '/all_errors/NN', test_address + '/all_errors/KNN',
                           test_address + '/plots_of_real_prediction_values']
-    zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
-    # send_email(zip_file_name + '.zip')
+#     zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
+#     make_zip(selected_for_email, zip_file_name)
+#     # send_email(zip_file_name + '.zip')
 
-    # save the entire session
-    filename = env_address + 'test.out'
-    my_shelf = shelve.open(filename, 'n')  # 'n' for new
-    for key in dir():
-        try:
-            my_shelf[key] = locals()[key]
-        except:
-            print('ERROR shelving: {0}'.format(key))
-    my_shelf.close()
+#     # save the entire session
+#     filename = env_address + 'test.out'
+#     my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#     for key in dir():
+#         try:
+#             my_shelf[key] = locals()[key]
+#         except:
+#             print('ERROR shelving: {0}'.format(key))
+#     my_shelf.close()
 
 
 ########################################################### main
@@ -1386,15 +1367,15 @@ def main(maxHistory):
         #     print(np.isnan(y_prediction[method][(h, 4)]))
         #     print(y_prediction[method][(h, 4)].shape)
 
-        # save the entire session for each h and c
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#         # save the entire session for each h and c
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         # find best loss
         # if h == 1:
@@ -1445,15 +1426,15 @@ def main(maxHistory):
         #     print(np.isnan(y_prediction[method][(h, 4)]))
         #     print(y_prediction[method][(h, 4)].shape)
 
-        # save the entire session for each h and c
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#         # save the entire session for each h and c
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         number_of_improved_methods = 0  # we count number_of_improved_methods to run test if no method have improved in current h
 
@@ -1509,30 +1490,30 @@ def main(maxHistory):
 
             if indx_c == maxC:
                 break
-            # save the entire session for each h and c
-            filename = env_address + 'validation.out'
-            my_shelf = shelve.open(filename, 'n')  # 'n' for new
-            for key in dir():
-                try:
-                    my_shelf[key] = locals()[key]
-                except:
-                    print('ERROR shelving: {0}'.format(key))
-            my_shelf.close()
-        # save the entire session for each h
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#             # save the entire session for each h and c
+#             filename = env_address + 'validation.out'
+#             my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#             for key in dir():
+#                 try:
+#                     my_shelf[key] = locals()[key]
+#                 except:
+#                     print('ERROR shelving: {0}'.format(key))
+#             my_shelf.close()
+#         # save the entire session for each h
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         # push the file of outputs
         push('logs of h=' + str(h) + ' added')
 
         # we run test if none of models have improved in curent h or if we passed half of maxhistory
-        if (number_of_improved_methods == 0) or (h == maxHistory // 2):  ###########################
+        if (number_of_improved_methods == -1):  ###########################
             print('jump to test process')
             test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
                          historical_X_test, historical_y_train_date, historical_y_test_date, best_loss, \

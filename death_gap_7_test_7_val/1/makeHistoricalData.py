@@ -28,10 +28,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         data.loc[data[feature]<0,feature]=np.NaN
         value_count=data.groupby('county_fips').count()
         counties_with_all_nulls=value_count[value_count[feature]==0]
-        temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
-
-        for i in data['date'].unique():
-            temp[i]=data.loc[data['date']==i,feature].tolist()
+        temp = data.pivot(index='county_fips', columns='date', values=feature)
         X = np.array(temp)
         imputer = KNNImputer(n_neighbors=5)
         imp=imputer.fit_transform(X)
@@ -44,14 +41,11 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
             data.loc[data['county_fips'].isin(counties_with_all_nulls.index),feature]=np.NaN
         return(data)
     def mean_impute_feature(data,feature):
-            temp=pd.DataFrame(index=data['date'].unique().tolist(),columns=data['county_fips'].unique().tolist())
-            for i in data['county_fips'].unique():
-                temp[i]=data.loc[data['county_fips']==i,feature].tolist()
-            for i in temp.columns:
-                temp.loc[pd.isna(temp[i]),i]=temp[i].mean()
-            for i in data['county_fips'].unique():
-                data.loc[data['county_fips']==i,feature]=temp[i].tolist()
-            return(data)
+        mean_df = data.groupby('county_fips').mean().reset_index()[['county_fips',feature]]
+        mean_df = mean_df.rename(columns={feature:feature + ' mean'})
+        data = pd.merge(data, mean_df, on = ['county_fips'], how = 'left')
+        data.loc[pd.isnull(data[feature]),feature] = data.loc[pd.isnull(data[feature]),feature + ' mean']
+        return(data)
     def generate_country_covid_data(address):
         death = pd.read_csv(address+'international-covid-death-data.csv')
         confirmed = pd.read_csv(address+'international-covid-confirmed-data.csv')
@@ -93,14 +87,14 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     ##################################################################### imputation
 #     get_updated_covid_data(address)
 
-    zipFileName = address + 'temporal-data.zip'
-    #####################################################################
-    temporal_address = 'temporal-data' + '.csv'
-    with ZipFile(zipFileName, 'r') as zip:
-        temporal_file = zip.extract(temporal_address)
-    timeDeapandantData = pd.read_csv(temporal_file)
+#     zipFileName = address + 'temporal-data.zip'
+#     #####################################################################
+#     temporal_address = 'temporal-data' + '.csv'
+#     with ZipFile(zipFileName, 'r') as zip:
+#         temporal_file = zip.extract(temporal_address)
+#     timeDeapandantData = pd.read_csv(temporal_file)
     independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
-    # timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
+    timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
     
     timeDeapandantData['weekend']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
     timeDeapandantData['weekend']=timeDeapandantData['weekend'].apply(lambda x:x.weekday())
