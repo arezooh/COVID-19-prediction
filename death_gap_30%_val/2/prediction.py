@@ -66,10 +66,10 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     test_size = r
     if target_mode == 'weeklyaverage':
         test_size = 1
-        val_size = round(0.3 * (baseNumberOfDays - test_size - (r-1)))
+        val_size = int(round(0.3 * (baseNumberOfDays - test_size - (r-1))))
     else:
-        test_size = 1 #
-        val_size = round(0.3 * (baseNumberOfDays - test_size - (r-1)))
+        test_size = 1
+        val_size = int(round(0.3 * (baseNumberOfDays - test_size - (r-1))))
 
     if mode == 'val':
 
