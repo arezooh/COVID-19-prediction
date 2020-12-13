@@ -84,14 +84,7 @@ def GLM(X_train, X_test, y_train, y_test, mode):
 # ####################################################### KNN: K-Nearest Neighbors
 def KNN(X_train, X_test, y_train, y_test, mode):
     
-    
-    neighbors=np.array([10 ,20 ,40 ,60 ,80, 100, 120, 140, 160, 180, 200])
-    neighbors=neighbors[neighbors<len(X_train)*(4/5)] #4/5 of samples is used as train when cv=5
-    parameters = {'n_neighbors': neighbors}
-
-    
     if mode == 'val' :
-        
         X = X_train.append(X_test)
         y = np.append(y_train,y_test)
         len_test=len(y_test)
@@ -103,6 +96,9 @@ def KNN(X_train, X_test, y_train, y_test, mode):
             X_train, X_test = X.iloc[train_index,:], X.iloc[test_index,:]
             y_train, y_test = y[train_index], y[test_index]
             
+            neighbors=np.array([10 ,20 ,40 ,60 ,80, 100, 120, 140, 160, 180, 200])
+            neighbors=neighbors[neighbors<len(X_train)*(4/5)] #4/5 of samples is used as train when cv=5
+            parameters = {'n_neighbors': neighbors}
             KNeighborsRegressorObject = KNeighborsRegressor()
             # Grid search over different Ks to choose the best one
             GridSearchOnKs = GridSearchCV(KNeighborsRegressorObject, parameters, cv=5)
@@ -122,6 +118,9 @@ def KNN(X_train, X_test, y_train, y_test, mode):
         y_prediction_train = y_pred[:len_train]
         
     if mode == 'test' :
+        neighbors=np.array([10 ,20 ,40 ,60 ,80, 100, 120, 140, 160, 180, 200])
+        neighbors=neighbors[neighbors<len(X_train)*(4/5)] #4/5 of samples is used as train when cv=5
+        parameters = {'n_neighbors': neighbors}
         KNeighborsRegressorObject = KNeighborsRegressor()
         # Grid search over different Ks to choose the best one
         GridSearchOnKs = GridSearchCV(KNeighborsRegressorObject, parameters, cv=5)
