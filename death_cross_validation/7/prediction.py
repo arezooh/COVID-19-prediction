@@ -798,11 +798,11 @@ def get_errors(h, c, method, y_prediction, y_prediction_train, y_test_date, y_tr
     print("Root Mean Squared Error of ", method, " for h =", h, "and #covariates =", c, ": %.2f" % rootMeanSquaredError)
 
     second_error = sum(abs(y_prediction - y_test))
-    ### compute adjusted R squared error
-    SS_Residual = sum((y_test - y_prediction.reshape(-1)) ** 2)
-    SS_Total = sum((y_test - np.mean(y_test)) ** 2)
-    r_squared = 1 - (float(SS_Residual)) / SS_Total
-    adj_r_squared = 1 - (1 - r_squared) * (len(y_test) - 1) / (len(y_test) - c - 1)
+#     ### compute adjusted R squared error
+#     SS_Residual = sum((y_test - y_prediction.reshape(-1)) ** 2)
+#     SS_Total = sum((y_test - np.mean(y_test)) ** 2)
+#     r_squared = 1 - (float(SS_Residual)) / SS_Total
+    adj_r_squared = 1 # - (1 - r_squared) * (len(y_test) - 1) / (len(y_test) - c - 1)
     print("Adjusted R Squared Error of ", method, " for h =", h, "and #covariates =", c, ": %.2f" % adj_r_squared)
 
     MASE_numerator = sum(abs(y_prediction_temp - y_test_temp)) / len(y_test)
@@ -821,13 +821,13 @@ def get_errors(h, c, method, y_prediction, y_prediction_train, y_test_date, y_tr
     y_prediction_temp_country = y_prediction_country.copy()
     y_prediction_temp_country[y_test_country == 0] += 1
     # meanPercentageOfAbsoluteError = sum((abs(y_prediction_temp - y_test_temp) / y_test_temp) * 100) / len(y_test)
-    ### compute adjusted R squared error
-    SS_Residual = sum((y_test_country - y_prediction_country.reshape(-1)) ** 2)
-    SS_Total = sum((y_test_country - np.mean(y_test_country)) ** 2)
-    r_squared = 1 - (float(SS_Residual)) / SS_Total
+#     ### compute adjusted R squared error
+#     SS_Residual = sum((y_test_country - y_prediction_country.reshape(-1)) ** 2)
+#     SS_Total = sum((y_test_country - np.mean(y_test_country)) ** 2)
+#     r_squared = 1 - (float(SS_Residual)) / SS_Total
     if len(y_test_country) - c - 1 > 0:
-        country_errors['adj_r_squared'] = 1 - (1 - r_squared) * (len(y_test_country) - 1) / (
-                len(y_test_country) - c - 1)
+        country_errors['adj_r_squared'] = 1 # - (1 - r_squared) * (len(y_test_country) - 1) / (
+                # len(y_test_country) - c - 1)
     else:
         country_errors['adj_r_squared'] = 1
     MASE_numerator = sum(abs(y_prediction_temp_country - y_test_temp_country)) / len(y_test_country)
@@ -1169,9 +1169,9 @@ def test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h
     # mail the test results
     selected_for_email = [test_address + '/tables', test_address + '/all_errors/NN', test_address + '/all_errors/KNN',
                           test_address + '/plots_of_real_prediction_values']
-    zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
-    # send_email(zip_file_name + '.zip')
+#     zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
+#     make_zip(selected_for_email, zip_file_name)
+#     send_email(zip_file_name + '.zip')
 
 #     # save the entire session
 #     filename = env_address + 'test.out'
@@ -1547,11 +1547,11 @@ def main(maxHistory):
     for error in error_names:
         plot_results(3, 2, numberOfCovariates, methods, history, validation_errors[error], complete_error_names[error])
 
-    # mail the validation results
-    selected_for_email = [validation_address]
-    zip_file_name = 'validation results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
-    # send_email(zip_file_name + '.zip')
+#     # mail the validation results
+#     selected_for_email = [validation_address]
+#     zip_file_name = 'validation results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
+#     make_zip(selected_for_email, zip_file_name)
+#     # send_email(zip_file_name + '.zip')
     push('plots added')
     ################################################################################################################# test zone
     test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
@@ -1572,7 +1572,7 @@ if __name__ == "__main__":
                            'social-distancing-total-grade']  # sorted by their mrmr rank
     if target_mode in ['weeklyaverage','augmentedweeklyaverage']:
         r //= 7
-        maxHistory = min(5,10-r)
+        maxHistory //= 7
         test_size //= 7
 
     force_features = []
