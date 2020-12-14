@@ -4,19 +4,17 @@ import os
 import subprocess
 from pexecute.process import ProcessLoom
 
+r = 9
+
 def Run(i):
     subprocess.call("python ./prediction.py "+str(i), shell=True)
 
 def main():
-    # loom = ProcessLoom(max_runner_cap = 8)
-    for i in range(3):
+    for i in range(min((19 - (2*r) + 7), 7)):
         print(200 * '*')
         print(i)
         Run(i)
-    subprocess.call("python ./errors.py", shell=True)
-    #     print(i)
-    #     loom.add_function(Run,[i])
-    # loom.execute()
+
 
 
 if __name__ == "__main__":
