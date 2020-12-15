@@ -1,0 +1,7 @@
+best_h,best_c,mean absolute error,percentage of absolute error,adjusted R squared error,sum of absolute error,mean absolute scaled error,method
+1,1,700.0,99.86,1,700.0,3.54,GBM
+1,1,700.0,99.86,1,700.0,3.54,GLM
+2,1,80.66,11.51,1,80.66,0.42,KNN
+1,1,700.0,99.86,1,700.0,3.54,NN
+1,1,700.0,99.86,1,700.0,3.54,MM_GLM
+1,1,700.0,99.86,1,700.0,3.54,MM_NN
