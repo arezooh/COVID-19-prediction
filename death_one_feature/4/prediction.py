@@ -494,6 +494,10 @@ def plot_table(table_data, col_labels, row_labels, name, mode):
 
     plt.savefig(address + name + '.pdf', bbox_inches='tight')
 
+    csv_table = pd.DataFrame(table_data, columns=col_labels)
+    csv_table['method'] = list(row_labels)
+    csv_table.to_csv(address + name +'.csv', index = False)
+
 
 ########################################################### plotting mean errors (first error)
 def plot_targets(method, x_axis, df, main_address):
