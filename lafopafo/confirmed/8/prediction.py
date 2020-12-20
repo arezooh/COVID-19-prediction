@@ -1,5 +1,5 @@
 from makeHistoricalData import makeHistoricalData
-from models import GBM, GLM, KNN, NN, MM_GLM, GBM_grid_search, NN_grid_search
+from models import GBM, GLM, KNN, NN, MM_GLM, GBM_grid_search, NN_grid_search, MM_NN
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,9 +51,10 @@ push_flag = 0
 # the default values are |test_set| = |val_set| = r, |train_set| = the remaining days
 test_size = 21
 # maxHistory = 2 * 7
-maxHistory = min((14 * 7 - r), 5 * 7)
+maxHistory = min((19 * 7 - ((2*r) -7) - ((int(argv[1]) - 6) * 7)), 5 * 7)
 maxC = 100  # maximum number of covariates to be considered
 
+data_address = (os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd())))+'/data/').replace('\\','/')
 
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
@@ -88,12 +89,12 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 #             y_test = target.tail(r * numberOfCounties).sort_values(by=['county_fips', 'date of day t'])
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train_val = main_data.iloc[:-(test_size * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        X_train_train = main_data.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
+        X_train_val = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        X_train_train = main_data.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train_val = target.iloc[:-(test_size * numberOfCounties)].tail(val_size * numberOfCounties).copy()
-        y_train_train = target.iloc[:-((val_size + test_size) * numberOfCounties)].copy()
+        y_train_val = target.iloc[:-((test_size + r-1) * numberOfCounties)].tail(val_size * numberOfCounties).copy()
+        y_train_train = target.iloc[:-((val_size + test_size + r-1) * numberOfCounties)].copy()
 
         return X_train_train, X_train_val, X_test, y_train_train, y_train_val, y_test
 
@@ -107,10 +108,10 @@ def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
 
 #         else:
         X_test = main_data.tail(test_size * numberOfCounties).copy()
-        X_train = main_data.iloc[:-(test_size * numberOfCounties)].copy()
+        X_train = main_data.iloc[:-((test_size + r-1) * numberOfCounties)].copy()
 
         y_test = target.tail(test_size * numberOfCounties).copy()
-        y_train = target.iloc[:-(test_size * numberOfCounties)]
+        y_train = target.iloc[:-((test_size + r-1) * numberOfCounties)]
 
         return X_train, X_test, y_train, y_test
 
@@ -239,7 +240,7 @@ def mixed_parallel_run(method, X_train, X_test, y_train, y_test, best_loss):
     if method == 'MM_GLM':
         y_prediction, y_prediction_train = MM_GLM(X_train, X_test, y_train)
     elif method == 'MM_NN':
-        y_prediction, y_prediction_train = NN(X_train, X_test, y_train, y_test, best_loss[method])
+        y_prediction, y_prediction_train = MM_NN(X_train, X_test, y_train, y_test, best_loss[method])
 
     return y_prediction, y_prediction_train
 
@@ -301,7 +302,7 @@ def run_mixed_models(X_train_MM, X_test_MM, y_train_MM, y_test_MM, best_loss):
     loom = ProcessLoom(max_runner_cap=2)
     # add the functions to the multiprocessing object, loom
     loom.add_function(MM_GLM, [X_train_MM['MM_GLM'], X_test_MM['MM_GLM'], y_train_MM['MM_GLM']], {})
-    loom.add_function(NN, [X_train_MM['MM_NN'], X_test_MM['MM_NN'], y_train_MM['MM_NN'], y_test_MM['MM_NN'],
+    loom.add_function(MM_NN, [X_train_MM['MM_NN'], X_test_MM['MM_NN'], y_train_MM['MM_NN'], y_test_MM['MM_NN'],
                            best_loss['MM_NN']], {})
     # run the processes in parallel
     output = loom.execute()
@@ -396,7 +397,7 @@ def get_best_loss_mode(counties_best_loss_list):
 ########################################################### generate data for best h and c
 
 def generate_data(h, numberOfCovariates, covariates_names, numberOfSelectedCounties):
-    data = makeHistoricalData(h, r, test_size, 'confirmed', 'mrmr', spatial_mode, target_mode, './', future_features, pivot, int(argv[1]))
+    data = makeHistoricalData(h, r, test_size, 'confirmed', 'mrmr', spatial_mode, target_mode, data_address, future_features, pivot, int(argv[1]))
     data = clean_data(data, numberOfSelectedCounties, spatial_mode)
 
     X_train, X_test, y_train, y_test = preprocess(data, spatial_mode, 0)
@@ -493,7 +494,7 @@ def plot_table(table_data, col_labels, row_labels, name, mode):
     ax.axis('off')
 
     plt.savefig(address + name + '.pdf', bbox_inches='tight')
-    
+
     csv_table = pd.DataFrame(table_data, columns=col_labels)
     csv_table['method'] = list(row_labels)
     csv_table.to_csv(address + name +'.csv', index = False)
@@ -563,10 +564,10 @@ def real_prediction_plot(df, r, test_size, target_name, target_mode, best_h, max
 
         method_prediction_df = df[method]  # this df contain real and predicted target values
         if pivot == 'county':
-            county_name_df = pd.read_csv('./' + 'fixed-data.csv')[
+            county_name_df = pd.read_csv(data_address + 'fixed-data.csv')[
                 ['county_fips', 'county_name']]  # we need county names for plot label
         elif pivot == 'state':
-            county_name_df = pd.read_csv('./' + 'fixed-data.csv')[
+            county_name_df = pd.read_csv(data_address + 'fixed-data.csv')[
                 ['state_fips', 'state_name']]  # we need county names for plot label
             county_name_df.rename(columns={'state_fips': 'county_fips', 'state_name': 'county_name'},
                                   inplace=True)
@@ -667,7 +668,7 @@ def get_errors(h, c, method, y_prediction, y_prediction_train, y_test_date, y_tr
     # in validation mode we read regular data in main function and passed to get_error to avoid redundancy
     # but in test mode its not possible because each method has different h(best_h)
     if mode == 'test':
-        regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', './',
+        regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', data_address,
                                           future_features, pivot, int(argv[1]))
         regular_data = clean_data(regular_data, numberOfSelectedCounties, spatial_mode)
         temp_1, temp_2, regular_y_train_date, regular_y_test_date = preprocess(regular_data, spatial_mode, 0)
@@ -1127,15 +1128,15 @@ def test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h
 
         y_test_MM_dict[mixed_method] = np.array(y_test_MM_dict[mixed_method]['Target']).reshape(-1)
         y_train_MM_dict[mixed_method] = np.array(y_train_MM_dict[mixed_method]['Target']).reshape(-1)
-    # save the entire session
-    filename = env_address + 'test.out'
-    my_shelf = shelve.open(filename, 'n')  # 'n' for new
-    for key in dir():
-        try:
-            my_shelf[key] = locals()[key]
-        except:
-            print('ERROR shelving: {0}'.format(key))
-    my_shelf.close()
+#     # save the entire session
+#     filename = env_address + 'test.out'
+#     my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#     for key in dir():
+#         try:
+#             my_shelf[key] = locals()[key]
+#         except:
+#             print('ERROR shelving: {0}'.format(key))
+#     my_shelf.close()
     # mixed model with linear regression and neural network
     MM_GLM, MM_NN = run_mixed_models(X_train_MM_dict, X_test_MM_dict, y_train_MM_dict, y_test_MM_dict, best_loss)
     y_prediction['MM_GLM'], y_prediction_train['MM_GLM'] = MM_GLM
@@ -1176,19 +1177,19 @@ def test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h
     # mail the test results
     selected_for_email = [test_address + '/tables', test_address + '/all_errors/NN', test_address + '/all_errors/KNN',
                           test_address + '/plots_of_real_prediction_values']
-    zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
-    # send_email(zip_file_name + '.zip')
+#     zip_file_name = 'test results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
+#     make_zip(selected_for_email, zip_file_name)
+#     # send_email(zip_file_name + '.zip')
 
-    # save the entire session
-    filename = env_address + 'test.out'
-    my_shelf = shelve.open(filename, 'n')  # 'n' for new
-    for key in dir():
-        try:
-            my_shelf[key] = locals()[key]
-        except:
-            print('ERROR shelving: {0}'.format(key))
-    my_shelf.close()
+#     # save the entire session
+#     filename = env_address + 'test.out'
+#     my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#     for key in dir():
+#         try:
+#             my_shelf[key] = locals()[key]
+#         except:
+#             print('ERROR shelving: {0}'.format(key))
+#     my_shelf.close()
 
 
 ########################################################### main
@@ -1201,9 +1202,8 @@ def main(maxHistory):
     # none_mixed_methods = ['GBM']
     mixed_methods = ['MM_GLM', 'MM_NN']
     target_name = 'confirmed'
-    base_data = makeHistoricalData(0, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, './',
+    base_data = makeHistoricalData(0, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, data_address,
                                    future_features, pivot, int(argv[1]))
-    base_data.to_csv('./' + str(argv[1]) + '/' + 'data.csv')
     print("base data before clean shape: ", base_data.shape)
     base_data_before_clean_columns = base_data.columns.values
     base_data = clean_data(base_data, numberOfSelectedCounties, spatial_mode)
@@ -1253,7 +1253,7 @@ def main(maxHistory):
     for h in history:
         print(100 * "#")
         print("h =", h)
-        data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, './',
+        data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, target_mode, data_address,
                                   future_features, pivot, int(argv[1]))
         print("data before clean shape:", data.shape)
         # pre-process and split the data, 'date's have dates info
@@ -1277,7 +1277,7 @@ def main(maxHistory):
 
         if target_mode not in ['regular',
                                'weeklyaverage']:  # we need regular data to return predicted values to first state
-            regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', './',
+            regular_data = makeHistoricalData(h, r, test_size, target_name, 'mrmr', spatial_mode, 'regular', data_address,
                                               future_features, pivot, int(argv[1]))
             regular_data = clean_data(regular_data, numberOfSelectedCounties, spatial_mode)
         else:
@@ -1389,15 +1389,15 @@ def main(maxHistory):
         #     print(np.isnan(y_prediction[method][(h, 4)]))
         #     print(y_prediction[method][(h, 4)].shape)
 
-        # save the entire session for each h and c
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#         # save the entire session for each h and c
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         # find best loss
         # if h == 1:
@@ -1448,15 +1448,15 @@ def main(maxHistory):
         #     print(np.isnan(y_prediction[method][(h, 4)]))
         #     print(y_prediction[method][(h, 4)].shape)
 
-        # save the entire session for each h and c
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#         # save the entire session for each h and c
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         number_of_improved_methods = 0  # we count number_of_improved_methods to run test if no method have improved in current h
 
@@ -1512,30 +1512,30 @@ def main(maxHistory):
 
             if indx_c == maxC:
                 break
-            # save the entire session for each h and c
-            filename = env_address + 'validation.out'
-            my_shelf = shelve.open(filename, 'n')  # 'n' for new
-            for key in dir():
-                try:
-                    my_shelf[key] = locals()[key]
-                except:
-                    print('ERROR shelving: {0}'.format(key))
-            my_shelf.close()
-        # save the entire session for each h
-        filename = env_address + 'validation.out'
-        my_shelf = shelve.open(filename, 'n')  # 'n' for new
-        for key in dir():
-            try:
-                my_shelf[key] = locals()[key]
-            except:
-                print('ERROR shelving: {0}'.format(key))
-        my_shelf.close()
+#             # save the entire session for each h and c
+#             filename = env_address + 'validation.out'
+#             my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#             for key in dir():
+#                 try:
+#                     my_shelf[key] = locals()[key]
+#                 except:
+#                     print('ERROR shelving: {0}'.format(key))
+#             my_shelf.close()
+#         # save the entire session for each h
+#         filename = env_address + 'validation.out'
+#         my_shelf = shelve.open(filename, 'n')  # 'n' for new
+#         for key in dir():
+#             try:
+#                 my_shelf[key] = locals()[key]
+#             except:
+#                 print('ERROR shelving: {0}'.format(key))
+#         my_shelf.close()
 
         # push the file of outputs
         push('logs of h=' + str(h) + ' added')
 
         # we run test if none of models have improved in curent h or if we passed half of maxhistory
-        if (number_of_improved_methods == 0) or (h == maxHistory // 2):  ###########################
+        if (number_of_improved_methods == -1):  ###########################
             print('jump to test process')
             test_process(h, r, test_size, target_name, spatial_mode, target_mode, best_h, best_c, historical_X_train, \
                          historical_X_test, historical_y_train_date, historical_y_test_date, best_loss, \
@@ -1557,8 +1557,8 @@ def main(maxHistory):
 
     # mail the validation results
     selected_for_email = [validation_address]
-    zip_file_name = 'validation results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
+#     zip_file_name = 'validation results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
+#     make_zip(selected_for_email, zip_file_name)
     # send_email(zip_file_name + '.zip')
     push('plots added')
     ################################################################################################################# test zone
@@ -1571,6 +1571,12 @@ def main(maxHistory):
 if __name__ == "__main__":
 
     begin = time.time()
+
+
+    if maxHistory < 1:
+        print('Maximum History Must Be Positive!')
+        sys.exit()
+
     future_mode = False
     future_features = []
     if r >= 28:

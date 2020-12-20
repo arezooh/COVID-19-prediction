@@ -33,25 +33,31 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 ####################################################### GBM: Gradient Boosting Regressor
 def GBM(X_train, X_test, y_train, loss):
 
-    parameters = {'max_depth': 40, 'min_samples_leaf': 1,
-                  'learning_rate': 0.01, 'loss': loss}
-    GradientBoostingRegressorObject = HistGradientBoostingRegressor(random_state=1, **parameters)
+#     parameters = {'max_depth': 40, 'min_samples_leaf': 1,
+#                   'learning_rate': 0.01, 'loss': loss}
+#     GradientBoostingRegressorObject = HistGradientBoostingRegressor(random_state=1, **parameters)
 
-    GradientBoostingRegressorObject.fit(X_train, y_train)
-    y_prediction = GradientBoostingRegressorObject.predict(X_test)
-    y_prediction_train = GradientBoostingRegressorObject.predict(X_train)
+#     GradientBoostingRegressorObject.fit(X_train, y_train)
+#     y_prediction = GradientBoostingRegressorObject.predict(X_test)
+#     y_prediction_train = GradientBoostingRegressorObject.predict(X_train)
 
-    return y_prediction, y_prediction_train
+    y_prediction = [1]*len(X_test)
+    y_prediction_train = [1]*len(X_train)
+
+    return np.array(y_prediction).ravel(), np.array(y_prediction_train).ravel()
 
 
 ###################################################### GLM: Generalized Linear Model, we use Lasso
 def GLM(X_train, X_test, y_train):
 
-    GLM_Model = ElasticNet(random_state=1)
-    GLM_Model.fit(X_train, y_train)
-    y_prediction = GLM_Model.predict(X_test)
-    y_prediction_train = GLM_Model.predict(X_train)
-    print('GLM coef: ', GLM_Model.coef_)
+#     GLM_Model = ElasticNet(random_state=1)
+#     GLM_Model.fit(X_train, y_train)
+#     y_prediction = GLM_Model.predict(X_test)
+#     y_prediction_train = GLM_Model.predict(X_train)
+#     print('GLM coef: ', GLM_Model.coef_)
+
+    y_prediction = [1]*len(X_test)
+    y_prediction_train = [1]*len(X_train)
 
     return np.array(y_prediction).ravel(), np.array(y_prediction_train).ravel()
 
@@ -95,79 +101,91 @@ def KNN(X_train, X_test, y_train):
 ####################################################### NN: Neural Network
 def NN(X_train, X_test, y_train, y_test, loss):
 
-    # prepare dataset with input and output scalers, can be none
-    def get_dataset(input_scaler, output_scaler):
+#     # prepare dataset with input and output scalers, can be none
+#     def get_dataset(input_scaler, output_scaler):
 
-        trainX, testX = X_train, X_test
-        trainy, testy = y_train, y_test
-        # scale inputs
-        if input_scaler is not None:
-            # fit scaler
-            input_scaler.fit(trainX)
-            # transform training dataset
-            trainX = input_scaler.transform(trainX)
-            # fit scaler
-            # input_scaler.fit(testX)
-            # transform test dataset
-            testX = input_scaler.transform(testX)
-        if output_scaler is not None:
-            # reshape 1d arrays to 2d arrays
-            trainy = trainy.reshape(len(trainy), 1)
-            testy = testy.reshape(len(testy), 1)
-            # fit scaler on training dataset
-            output_scaler.fit(trainy)
-            # transform training dataset
-            trainy = output_scaler.transform(trainy)
-            # fit scaler on testing dataset
-            # output_scaler.fit(testy)
-            # transform test dataset
-            testy = output_scaler.transform(testy)
-        return trainX, trainy, testX, testy
+#         trainX, testX = X_train, X_test
+#         trainy, testy = y_train, y_test
+#         # scale inputs
+#         if input_scaler is not None:
+#             # fit scaler
+#             input_scaler.fit(trainX)
+#             # transform training dataset
+#             trainX = input_scaler.transform(trainX)
+#             # fit scaler
+#             # input_scaler.fit(testX)
+#             # transform test dataset
+#             testX = input_scaler.transform(testX)
+#         if output_scaler is not None:
+#             # reshape 1d arrays to 2d arrays
+#             trainy = trainy.reshape(len(trainy), 1)
+#             testy = testy.reshape(len(testy), 1)
+#             # fit scaler on training dataset
+#             output_scaler.fit(trainy)
+#             # transform training dataset
+#             trainy = output_scaler.transform(trainy)
+#             # fit scaler on testing dataset
+#             # output_scaler.fit(testy)
+#             # transform test dataset
+#             testy = output_scaler.transform(testy)
+#         return trainX, trainy, testX, testy
 
-    def denormalize(main_data, normal_data, scaler):
+#     def denormalize(main_data, normal_data, scaler):
 
-        main_data = main_data.reshape(-1, 1)
-        normal_data = normal_data.reshape(-1, 1)
-        # scaleObject = StandardScaler()
-        scaler.fit_transform(main_data)
-        denormalizedData = scaler.inverse_transform(normal_data)
+#         main_data = main_data.reshape(-1, 1)
+#         normal_data = normal_data.reshape(-1, 1)
+#         # scaleObject = StandardScaler()
+#         scaler.fit_transform(main_data)
+#         denormalizedData = scaler.inverse_transform(normal_data)
 
-        return denormalizedData
+#         return denormalizedData
 
-    trainX, trainy, testX, testy = get_dataset(MinMaxScaler(), MinMaxScaler())
-    neurons = (trainX.shape[1]) // 2 + 1
-    # print(neurons)
-    # NeuralNetworkObject = MLPRegressor(hidden_layer_sizes=(neurons,), max_iter=2000, random_state=1, solver='sgd')
-    # NeuralNetworkObject.fit(trainX, trainy.ravel())
+#     trainX, trainy, testX, testy = get_dataset(MinMaxScaler(), MinMaxScaler())
+#     neurons = (trainX.shape[1]) // 2 + 1
+#     # print(neurons)
+#     # NeuralNetworkObject = MLPRegressor(hidden_layer_sizes=(neurons,), max_iter=2000, random_state=1, solver='sgd')
+#     # NeuralNetworkObject.fit(trainX, trainy.ravel())
 
-    NeuralNetworkObject = keras.Sequential([
-        keras.Input(shape=(trainX.shape[1],)),
-        layers.Dense(neurons),
-        layers.Dense(1,activation=tf.exp)
-    ])
-    # Compile the model
-    NeuralNetworkObject.compile(
-        loss=loss,
-        optimizer=keras.optimizers.RMSprop(),
-        metrics=['mean_squared_error'])
+#     NeuralNetworkObject = keras.Sequential([
+#         keras.Input(shape=(trainX.shape[1],)),
+#         layers.Dense(neurons),
+#         layers.Dense(1,activation=tf.exp)
+#     ])
+#     # Compile the model
+#     NeuralNetworkObject.compile(
+#         loss=loss,
+#         optimizer=keras.optimizers.RMSprop(),
+#         metrics=['mean_squared_error'])
 
-    early_stop = EarlyStopping(monitor='val_loss', patience=30)
+#     early_stop = EarlyStopping(monitor='val_loss', patience=30)
 
-    NeuralNetworkObject.fit(trainX, trainy.ravel(),
-                   callbacks=[early_stop],
-                   batch_size=128,
-                   validation_split=0.2,
-                   epochs=2000, verbose=0)
+#     NeuralNetworkObject.fit(trainX, trainy.ravel(),
+#                    callbacks=[early_stop],
+#                    batch_size=128,
+#                    validation_split=0.2,
+#                    epochs=2000, verbose=0)
 
-    test_mse = NeuralNetworkObject.evaluate(testX, testy)[1]
-    print('NN mse test: ', test_mse)
-    train_mse = NeuralNetworkObject.evaluate(trainX, trainy)[1]
-    print('NN mse train: ', train_mse)
-    y_prediction = NeuralNetworkObject.predict(testX)
-    y_prediction = denormalize(y_train, y_prediction, MinMaxScaler())
-    y_prediction_train = NeuralNetworkObject.predict(trainX)
-    y_prediction_train = denormalize(y_train, y_prediction_train, MinMaxScaler())
+#     test_mse = NeuralNetworkObject.evaluate(testX, testy)[1]
+#     print('NN mse test: ', test_mse)
+#     train_mse = NeuralNetworkObject.evaluate(trainX, trainy)[1]
+#     print('NN mse train: ', train_mse)
+#     y_prediction = NeuralNetworkObject.predict(testX)
+#     y_prediction = denormalize(y_train, y_prediction, MinMaxScaler())
+#     y_prediction_train = NeuralNetworkObject.predict(trainX)
+#     y_prediction_train = denormalize(y_train, y_prediction_train, MinMaxScaler())
+    
+    y_prediction = [1]*len(X_test)
+    y_prediction_train = [1]*len(X_train)
 
+    return np.array(y_prediction).ravel(), np.array(y_prediction_train).ravel()
+
+
+####################################################### MM-NN: Mixed Model with Neural Network
+def MM_NN(X_train, X_test, y_train, y_test, loss):
+    
+    y_prediction = [1]*len(X_test)
+    y_prediction_train = [1]*len(X_train)
+    
     return np.array(y_prediction).ravel(), np.array(y_prediction_train).ravel()
 
 ######################################################### MM-LR: Mixed Model with Linear Regression
@@ -200,11 +218,13 @@ def MM_LR(X_train, X_test, y_train):
 
 def MM_GLM(X_train, X_test, y_train):
 
-    GLM_Model = ElasticNet(random_state=1 ,max_iter=2000)
-    GLM_Model.fit(X_train, y_train)
-    y_prediction = GLM_Model.predict(X_test)
-    y_prediction_train = GLM_Model.predict(X_train)
-    print('GLM coef: ', GLM_Model.coef_)
+#     GLM_Model = ElasticNet(random_state=1 ,max_iter=2000)
+#     GLM_Model.fit(X_train, y_train)
+#     y_prediction = GLM_Model.predict(X_test)
+#     y_prediction_train = GLM_Model.predict(X_train)
+#     print('GLM coef: ', GLM_Model.coef_)
+    y_prediction = [1]*len(X_test)
+    y_prediction_train = [1]*len(X_train)
 
     return np.array(y_prediction).ravel(), np.array(y_prediction_train).ravel()
 

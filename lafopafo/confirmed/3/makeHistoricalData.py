@@ -5,6 +5,7 @@ import time
 from sklearn.impute import SimpleImputer
 from sklearn.impute import KNNImputer
 import requests
+from zipfile import ZipFile
 
 ######################################################################### NEW RANK CORRECTED
 # h is the number of days before day (t)
@@ -27,30 +28,24 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         data.loc[data[feature]<0,feature]=np.NaN
         value_count=data.groupby('county_fips').count()
         counties_with_all_nulls=value_count[value_count[feature]==0]
-        temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
-
-        for i in data['date'].unique():
-            temp[i]=data.loc[data['date']==i,feature].tolist()
+        temp = data.pivot(index='county_fips', columns='date', values=feature)
         X = np.array(temp)
         imputer = KNNImputer(n_neighbors=5)
         imp=imputer.fit_transform(X)
         imp=pd.DataFrame(imp)
-        imp.columns=temp.columns
+        imp.columns=temp.iloc[:,-len(imp.columns):].columns
         imp.index=temp.index
-        for i in data['date'].unique():
+        for i in imp.columns:
             data.loc[data['date']==i,feature]=imp[i].tolist()
         if(len(counties_with_all_nulls)>0):
             data.loc[data['county_fips'].isin(counties_with_all_nulls.index),feature]=np.NaN
         return(data)
     def mean_impute_feature(data,feature):
-            temp=pd.DataFrame(index=data['date'].unique().tolist(),columns=data['county_fips'].unique().tolist())
-            for i in data['county_fips'].unique():
-                temp[i]=data.loc[data['county_fips']==i,feature].tolist()
-            for i in temp.columns:
-                temp.loc[pd.isna(temp[i]),i]=temp[i].mean()
-            for i in data['county_fips'].unique():
-                data.loc[data['county_fips']==i,feature]=temp[i].tolist()
-            return(data)
+        mean_df = data.groupby('county_fips').mean().reset_index()[['county_fips',feature]]
+        mean_df = mean_df.rename(columns={feature:feature + ' mean'})
+        data = pd.merge(data, mean_df, on = ['county_fips'], how = 'left')
+        data.loc[pd.isnull(data[feature]),feature] = data.loc[pd.isnull(data[feature]),feature + ' mean']
+        return(data)
     def generate_country_covid_data(address):
         death = pd.read_csv(address+'international-covid-death-data.csv')
         confirmed = pd.read_csv(address+'international-covid-confirmed-data.csv')
@@ -90,7 +85,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
     
     ##################################################################### imputation
-    get_updated_covid_data(address)
+#     get_updated_covid_data(address)
+
     independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
     timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
     
@@ -172,15 +168,27 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         timeDeapandantData = country_aggregate(timeDeapandantData)
 
     if mobility_flag:
-                mobility = pd.read_csv('United States.csv')
-                mobility['Start-date']  = pd.to_datetime(mobility['Start-date'], format='%Y-%m-%d')
-                mobility['Start-date'] = mobility['Start-date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
-                mobility = mobility.rename(columns={'Start-date': 'date'})
-                timeDeapandantData = pd.merge(timeDeapandantData, mobility, on=['date'])
-                timeDeapandantData = timeDeapandantData.drop(['End-date', 'Deaths', 'Cases'], axis=1)
-                social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
-                timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
-
+        mobility=pd.read_csv(address+'Global_Mobility_Report.csv')
+        mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
+        mobility=mobility[['date',
+               'retail_and_recreation_percent_change_from_baseline',
+               'grocery_and_pharmacy_percent_change_from_baseline',
+               'parks_percent_change_from_baseline',
+               'transit_stations_percent_change_from_baseline',
+               'workplaces_percent_change_from_baseline',
+               'residential_percent_change_from_baseline']]
+        mobility.columns=['date','Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
+        mobility.loc[:,'date'] = mobility['date'].apply(lambda x : datetime.datetime.strptime(x,'%Y-%m-%d'))
+        timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strptime(x,'%m/%d/%y'))
+        timeDeapandantData = pd.merge(timeDeapandantData,mobility,how='left',on=['date'])
+        Start_date = mobility['date'].min()
+        End_date = min(mobility['date'].max(),timeDeapandantData['date'].max())
+        timeDeapandantData = timeDeapandantData[timeDeapandantData['date']>=Start_date]
+        timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=End_date]
+        timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%m/%d/%y'))
+        social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
+        timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
+    timeDeapandantData.to_csv('dailydata.csv')
     ##################################################################### cumulative mode
     
     
@@ -580,16 +588,19 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
 def main():
     h = 0
-    r = 14
-    target = 'confirmed'
+    r = 4
+    target = 'death'
     feature_selection = 'mrmr'
     spatial_mode = 'country'
-    target_mode = 'cumulative'
-    address = './'
-    pivot = 'county'
-    # result = makeHistoricalData(h, r, target, feature_selection, spatial_mode, target_mode,address, pivot)
+    target_mode = 'weeklyaverage'
+    address = '../data/'
+    future_features = []
+    pivot = 'country'
+    end_date = 0
+    result = makeHistoricalData(h, r, 21, target, feature_selection, spatial_mode, target_mode,
+                       address, future_features, pivot, end_date)
     # Storing the result in a csv file
-    # result.to_csv('dataset_h=' + str(h) + '.csv', mode='w', index=False)
+    result.to_csv('dataset_h=' + str(h) + '.csv', mode='w', index=False)
 
 
 if __name__ == "__main__":
