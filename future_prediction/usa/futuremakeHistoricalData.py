@@ -81,14 +81,14 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     ##################################################################### imputation
 #     get_updated_covid_data(address)
 
-    zipFileName = address + 'temporal-data.zip'
-    #####################################################################
-    temporal_address = 'temporal-data' + '.csv'
-    with ZipFile(zipFileName, 'r') as zip:
-        temporal_file = zip.extract(temporal_address)
-    timeDeapandantData = pd.read_csv(temporal_file)
+#     zipFileName = address + 'temporal-data.zip'
+#     #####################################################################
+#     temporal_address = 'temporal-data' + '.csv'
+#     with ZipFile(zipFileName, 'r') as zip:
+#         temporal_file = zip.extract(temporal_address)
+#     timeDeapandantData = pd.read_csv(temporal_file)
     independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
-#     timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
+    timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
 
     independantOfTimeData = independantOfTimeData.astype({col: 'float64' for col in independantOfTimeData.columns.drop(['county_fips','state_fips', 'state_name', 'county_name'])})
     timeDeapandantData = timeDeapandantData.astype({col: 'float64' for col in timeDeapandantData.columns.drop(['county_fips','date'])})
@@ -159,7 +159,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
               data.loc[~pd.isnull(data[col]),col] = data.loc[~pd.isnull(data[col]),col].apply(lambda x:round(x))
             data['county_fips'] = 1
             data = data.drop(['confirmed','death'],axis=1)
-            country_confirmed_death = generate_country_covid_data(address)
+            country_confirmed_death = generate_country_covid_data('../csvFiles')
             if not drop_covariates:
               data=pd.merge(data,country_confirmed_death,how='left',on=['date','county_fips'])
             else:
@@ -169,7 +169,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         timeDeapandantData = country_aggregate(timeDeapandantData)
         
     if mobility_flag:
-            mobility=pd.read_csv(address + 'Global_Mobility_Report.csv')
+            mobility=pd.read_csv('../csvFiles' + 'Global_Mobility_Report.csv')
             mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
             mobility=mobility[['date',
                    'retail_and_recreation_percent_change_from_baseline',

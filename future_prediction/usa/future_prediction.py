@@ -20,7 +20,10 @@ import subprocess
 from zipfile import ZipFile
 
 address = './'
-data_address = '../data/'
+if int(argv[1]) == 1 :
+    data_address = '../csvFiles/'
+else :
+    data_address = '../csvFiles/weatherless/'
 
 seed(1)
 tf.random.set_seed(1)
@@ -67,12 +70,8 @@ mixed_methods = ['MM_GLM', 'MM_NN','LSTM_MIXED']
 models_to_log = ['NN', 'GLM', 'GBM', 'KNN']#
 best_loss = {'GBM': 'least_absolute_deviation', 'MM_NN': 'MeanAbsoluteError', 'NN': 'MeanAbsoluteError'}#MeanAbsoluteError
 
-zipFileName = data_address + 'temporal-data.zip'
-#####################################################################
-temporal_address = 'temporal-data' + '.csv'
-with ZipFile(zipFileName, 'r') as zip:
-   temporal_file = zip.extract(temporal_address)
-temporal_data = pd.read_csv(temporal_file)
+
+temporal_data = pd.read_csv(data_address + 'temporal-data.csv')
 
 
 temporal_data['date'] = temporal_data['date'].apply(lambda x : datetime.datetime.strptime(x, '%y/%m/%d'))
@@ -903,7 +902,7 @@ def main():
         print(200 * '*')
         print('r = ',r)
         
-        subprocess.call("python ./prediction.py "+str(r)+" weeklyaverage "+str(0), shell=True)
+        subprocess.call("python ./prediction.py "+str(r)+" weeklyaverage 0"+str(argv[1])+, shell=True)
 
 
     updated_best_r,updated_best_methods,updated_best_covariates,updated_best_h,updated_best_error,covered_r = find_best_configuration(address+"weeklyaverage/")

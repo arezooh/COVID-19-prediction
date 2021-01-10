@@ -57,7 +57,10 @@ if target_mode == 'regular':maxHistory = 10
         
 maxC = 100  # maximum number of covariates to be considered
 
-data_address = '../data/'
+if int(argv[4]) == 1 :
+    data_address = '../csvFiles/'
+else :
+    data_address = '../csvFiles/weatherless/'
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     numberOfCounties = len(main_data['county_fips'].unique())
@@ -1553,7 +1556,7 @@ def main(maxHistory):
     # mail the validation results
     selected_for_email = [validation_address]
     zip_file_name = 'validation results for h =' + str(maxHistory) + ' #counties=' + str(numberOfSelectedCountiesname)
-    make_zip(selected_for_email, zip_file_name)
+    # make_zip(selected_for_email, zip_file_name)
     # send_email(zip_file_name + '.zip')
     push('plots added')
     ################################################################################################################# test zone

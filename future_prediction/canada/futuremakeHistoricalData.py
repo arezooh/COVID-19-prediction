@@ -5,28 +5,34 @@ import time
 from sklearn.impute import SimpleImputer
 from sklearn.impute import KNNImputer
 import requests
-from zipfile import ZipFile
-import os
 
-######################################################################### NEW RANK CORRECTED
+
+
 # h is the number of days before day (t)
 # r indicates how many days after day (t) --> target-day = day(t+r)
 # target could be number of deaths or number of confirmed 
-def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode, target_mode,
-                       address, future_features, pivot, end_date):
+def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode, 
+                       target_mode, address, future_features, pivot, last_date, zero_remove, run_code):
     
     ''' in this code when h is 1, it means there is no history and we have just one column for each covariate
     so when h is 0, we put h equal to 1, because when h is 0 that means there no history (as when h is 1) '''
-    
-    
     if h == 0:
         h = 1
     future_mode = False
     # for r >= 28 we add some new features informing about the future
     future_limit = 4 if target_mode == 'weeklyaverage' else 28
     # if r >= future_limit: future_mode = True
+    
+    # for daily temporal mode we only need death so we drop
+    # other covariates which may updated by delay
+    drop_covariates = False
+    if run_code in ['d14']:#,'w28'
+#       drop_covariates = True
+      future_mode = False
 
     mobility_flag = True
+    ##########################################################################
+
     def impute_feature(data,feature):
         data.loc[data[feature]<0,feature]=np.NaN
         value_count=data.groupby('county_fips').count()
@@ -52,13 +58,13 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     def generate_country_covid_data(address):
         death = pd.read_csv(address+'international-covid-death-data.csv')
         confirmed = pd.read_csv(address+'international-covid-confirmed-data.csv')
-        death=death[death['Country/Region']=='US'].T
+        death=pd.DataFrame(death[death['Country/Region']=='Canada'].sum())
         death=death.iloc[4:,:]
         death.iloc[1:]=(death.iloc[1:].values-death.iloc[:-1].values)
         death = death.reset_index()
         death.columns = ['date','death']
         death['death']= death['death'].astype(int)
-        confirmed=confirmed[confirmed['Country/Region']=='US'].T
+        confirmed=pd.DataFrame(confirmed[confirmed['Country/Region']=='Canada'].sum())
         confirmed=confirmed.iloc[4:,:]
         confirmed.iloc[1:]=(confirmed.iloc[1:].values-confirmed.iloc[:-1].values)
         confirmed = confirmed.reset_index()
@@ -68,117 +74,20 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         confirmed_death['county_fips']=1
         confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
         confirmed_death=confirmed_death.sort_values(by=['date'])
-        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
+        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
         return(confirmed_death)
-    
-    def get_csv(web_addres,file_address):
-        url=web_addres
-        print(url)
-        req = requests.get(url)
-        url_content = req.content
-        csv_file = open(file_address, 'wb')
-        csv_file.write(url_content)
-        csv_file.close
-
-    def get_updated_covid_data(address):
-        get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-        ,address + 'international-covid-death-data.csv')
-        get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
-        ,address + 'international-covid-confirmed-data.csv')
-
-    
+        
     ##################################################################### imputation
 #     get_updated_covid_data(address)
 
-#     zipFileName = address + 'temporal-data.zip'
-#     #####################################################################
-#     temporal_address = 'temporal-data' + '.csv'
-#     with ZipFile(zipFileName, 'r') as zip:
-#         temporal_file = zip.extract(temporal_address)
-#     timeDeapandantData = pd.read_csv(temporal_file)
-    independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
-    timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
-    
-    timeDeapandantData['weekend']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
-    timeDeapandantData['weekend']=timeDeapandantData['weekend'].apply(lambda x:x.weekday())
-    timeDeapandantData['weekend']=timeDeapandantData['weekend'].replace([0,1,2,3,4,5,6],[-2,0,0,0,0,-1,-3])
-    
-    
-    # impute missing values for tests in first days with min
-    if pivot == 'country':
-          timeDeapandantData = impute_feature(timeDeapandantData,'daily-state-test')
-
-
-    # Next 12 lines remove counties with all missing values for some features (counties with partly missing values have been imputed)
-    independantOfTime_features_with_nulls=['ventilator_capacity','icu_beds','deaths_per_100000','Religious']
-
-    if pivot != 'country':
-        for i in independantOfTime_features_with_nulls:
-            nullind=independantOfTimeData.loc[pd.isnull(independantOfTimeData[i]),'county_fips'].unique()
-            timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
-            independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
-
-    timeDeapandant_features_with_nulls=['social-distancing-travel-distance-grade','social-distancing-total-grade',
-                                                'temperature','precipitation',]
-    if pivot != 'country':
-        for i in timeDeapandant_features_with_nulls:
-            nullind=timeDeapandantData.loc[pd.isnull(timeDeapandantData[i]),'county_fips'].unique()
-            timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
-            independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
-    else:
-        for i in timeDeapandant_features_with_nulls:
-            timeDeapandantData = mean_impute_feature(timeDeapandantData,i)
 
     if pivot == 'country':
-        def country_aggregate(data):
-            all_columns = data.columns.values
-            mean_columns = []
-            cumulative_columns = []
-            social_distancing_columns = []
-            for col in all_columns:
-                if col in ['precipitation', 'temperature', 'daily-state-test','weekend']:
-                    mean_columns.append(col)
-                elif 'social-distancing' in col:
-                    social_distancing_columns.append(col)
-                elif col in ['confirmed','death']:
-                    cumulative_columns.append(col)
-            data = pd.merge(data,independantOfTimeData[['county_fips','total_population']])
-            country_population = independantOfTimeData['total_population'].sum()
-            for col in social_distancing_columns:
-              data[col]=data[col]*data['total_population']
-            cumulative_columns += social_distancing_columns
-
-            if len(mean_columns)>0:
-              mean_columns.append('date')
-              mean_data = data[mean_columns]
-              mean_data = mean_data.groupby(['date']).mean()
-              mean_data = mean_data.reset_index()
-
-            if len(cumulative_columns)>0:
-              cumulative_columns.append('date')
-              cumulative_data = data[cumulative_columns]
-              cumulative_data = cumulative_data.groupby(['date']).sum()
-              cumulative_data = cumulative_data.reset_index()
-            if len(mean_columns)>0 and len(cumulative_columns)>0:
-              data = pd.merge(cumulative_data,mean_data,how='left',on=['date'])
-            elif len(mean_columns)>0:
-              data = mean_data
-            elif len(cumulative_columns)>0:
-              data = cumulative_data
-            for col in social_distancing_columns:
-              data[col] = data[col]/country_population
-              data.loc[~pd.isnull(data[col]),col] = data.loc[~pd.isnull(data[col]),col].apply(lambda x:round(x))
-            data['county_fips'] = 1
-            data = data.drop(['confirmed','death'],axis=1)
-            country_confirmed_death = generate_country_covid_data('../csvFiles/')
-            data=pd.merge(data,country_confirmed_death,how='left',on=['county_fips','date'])
-            return(data)
-
-        timeDeapandantData = country_aggregate(timeDeapandantData)
-
+        timeDeapandantData = generate_country_covid_data(address)
+        timeDeapandantData['county_fips'] = 1
+        
     if mobility_flag:
-        mobility=pd.read_csv('../csvFiles/'+'Global_Mobility_Report.csv')
-        mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
+        mobility=pd.read_csv(address+'Global_Mobility_Report.csv')
+        mobility = mobility[(mobility['country_region_code']=='CA')&(pd.isna(mobility['sub_region_1']))]#.unique()
         mobility=mobility[['date',
                'retail_and_recreation_percent_change_from_baseline',
                'grocery_and_pharmacy_percent_change_from_baseline',
@@ -197,12 +106,22 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
         social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
         timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
+    timeDeapandantData.to_csv('dailydata.csv') 
 
+    print(timeDeapandantData.head())
+
+    if last_date is not None :
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
+        timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=last_date]
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
+
+#     timeDeapandantData.to_csv('futuretimeDeapandantData.csv')
     ##################################################################### cumulative mode
     
-    
     if target_mode == 'cumulative': # make target cumulative by adding the values of the previous day to each day
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
         timeDeapandantData=timeDeapandantData.sort_values(by=['date','county_fips'])
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
 
         dates=timeDeapandantData['date'].unique()
         for i in range(len(dates)-1): 
@@ -213,11 +132,13 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     
     ###################################################################### weekly average mode
     
+    
     if target_mode == 'weeklyaverage': # make target weekly averaged
         
         def make_weekly(dailydata):
             dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
-            dailydata.drop(['weekend'],axis=1,inplace=True)
+            if 'weekend' in dailydata.columns:
+              dailydata.drop(['weekend'],axis=1,inplace=True)
             # add weekday to find epidemic weeks
             dailydata['weekday'] = dailydata['date'].apply(lambda x:x.weekday())
             dailydata.sort_values(by=['date','county_fips'],inplace=True)
@@ -234,14 +155,12 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
                 temp_df=dailydata.tail(numberofcounties*7) # weekly average of last week for all counties
                 date=temp_df.tail(1)['date'].iloc[0]
                 dailydata=dailydata.iloc[:-(numberofcounties*7),:]
-                sum_of_week = temp_df.groupby(['county_fips']).mean().reset_index()
                 temp_df = temp_df.groupby(['county_fips']).mean().reset_index()
-                temp_df[target] = sum_of_week[target]
-                temp_df['date'] = numberofweeks-i # week number 
+                temp_df['date'] = date # week end date
                 weeklydata=weeklydata.append(temp_df)
             weeklydata.sort_values(by=['county_fips','date'],inplace=True)
             weeklydata=weeklydata.reset_index(drop=True)
-            # weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
+            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
             return(weeklydata)
 
         
@@ -251,6 +170,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     ###################################################################### weekly moving average mode
     if target_mode == 'weeklymovingaverage':
         def make_moving_weekly_average(dailydata):
+            dailydata = dailydata.astype({col: 'float64' for col in dailydata.columns.drop(['county_fips','date'])})
             dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
             dailydata.sort_values(by=['date','county_fips'],inplace=True)
             numberofcounties=len(dailydata['county_fips'].unique())
@@ -276,13 +196,14 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
             return(weeklydata)
         timeDeapandantData=make_moving_weekly_average(timeDeapandantData)
-    
+        
     ###################################################################### augmented weekly average mode
     if target_mode == 'augmentedweeklyaverage':
-        print('augmentedweeklyaverage')
+      
         def make_moving_weekly_average(dailydata):
             dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
-            dailydata.drop(['weekend'],axis=1,inplace=True)
+            if 'weekend' in dailydata.columns:
+              dailydata.drop(['weekend'],axis=1,inplace=True)
             # add weekday to find epidemic weeks
             dailydata['weekday'] = dailydata['date'].apply(lambda x:x.weekday())
             dailydata.sort_values(by=['date','county_fips'],inplace=True)
@@ -314,7 +235,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
             return(weeklydata)
         timeDeapandantData=make_moving_weekly_average(timeDeapandantData)
-    
+
+
     ###################################################################### differential target mode   
 
     if target_mode == 'differential': # make target differential
@@ -329,7 +251,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         
     ###################################################################### add future features
 
-    if future_mode == True:
+    if future_mode == True and drop_covariates!= True:
         def add_future_features(dailydata):
             # dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%m/%d/%y'))
             dailydata.sort_values(by=['date', 'county_fips'], inplace=True)
@@ -348,13 +270,13 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
                     # compute the average and round it
                     next2weeks_data = next2weeks_data.groupby(['county_fips']).mean()
                     # add the average of social-distancing of the next two weeks to the current day data
-                    total_grade = 0
+                    # total_grade = 0
                     for temporal_feature in future_features:
-                        if temporal_feature != 'social-distancing-total-grade':
-                          future_feature = 'future-' + temporal_feature
-                          current_day_data[future_feature] = next2weeks_data[temporal_feature].copy().tolist()
-                          total_grade += current_day_data[future_feature]
-                    current_day_data['future-social-distancing-total-grade'] = total_grade/2
+                        # if temporal_feature != 'social-distancing-total-grade':
+                      future_feature = 'future-' + temporal_feature
+                      current_day_data[future_feature] = next2weeks_data[temporal_feature].copy().tolist()
+                    #       total_grade += current_day_data[future_feature]
+                    # current_day_data['future-social-distancing-total-grade'] = total_grade/2
                 else:
                     current_day_data = dailydata.head(numberofcounties).copy()
                     for temporal_feature in future_features:
@@ -377,13 +299,12 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         
     ##################################################################
     
-
     if pivot != 'country':
         allData = pd.merge(independantOfTimeData, timeDeapandantData, on='county_fips')
     else:
         allData = timeDeapandantData
-
         
+    allData['date']=allData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
     allData = allData.sort_values(by=['date', 'county_fips'])
     allData = allData.reset_index(drop=True)
 
@@ -395,7 +316,6 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     ranking_Target = ranking_data.iloc[((step*(r))*totalNumberOfCounties):,:].reset_index(drop=True)
     ranking_features['target'] = ranking_Target[target]
     ranking_data = ranking_features
-    ranking_data = ranking_data.iloc[:-(end_date+r),:] # gap (r-1) + test (1) = r
 
 
     # this columns are not numercal and wouldn't be included in correlation matrix, we store them to concatenate them later
@@ -437,11 +357,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         ix=final_rank
     else:
         ix = ranking_data.corr().abs().sort_values('target', ascending=False).index.drop(['target'])
-
-    if os.path.exists("./"+target_mode+"/"+str(r)+"/") and end_date == 0 :
-        pd.DataFrame(np.array(ix),columns=['name']).to_csv("./"+target_mode+"/"+str(r)+"/covariates_rank.csv",index=False)
-
-    #################################################################### making historical data 
+    
+    # #################################################################### making historical data 
 
     allData = allData.loc[:, ix]
     allData = pd.concat([allData, notNumericlData], axis=1)
@@ -461,14 +378,15 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
             temporalDataFrame = allData[[name]] # selecting column of the covariate that is being processed
             step = 1
             if target_mode == 'augmentedweeklyaverage': step = 7
-                
+            
             threshold = 0
             while threshold != h:
                 # we dont want history for future features
                 if name in future_features:
+                    print(name)
                     threshold = h-1
                 # get value of covariate that is being processed in first (totalNumberOfDays-h-r+1) days
-                temp = temporalDataFrame.head((totalNumberOfDays+(step*(-h-r+1)))*totalNumberOfCounties).copy().reset_index(drop=True)
+                temp = temporalDataFrame.head((totalNumberOfDays-(step*h)+step)*totalNumberOfCounties).copy().reset_index(drop=True)
                 
                 # we dont want date suffix for future features
                 if name not in future_features: 
@@ -483,78 +401,82 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
             # we dont need covariates that is fixed for each county in county mode
             # but also we need county and state name in all modes
             if (spatial_mode != 'county') or (name in ['county_name', 'state_name', 'state_fips']):
-              temporalDataFrame = allData[[name]]
-              temp = temporalDataFrame.head((totalNumberOfDays+(step*(-h-r+1)))*totalNumberOfCounties).copy().reset_index(drop=True)
-              result = pd.concat([result, temp], axis=1)
-
+                temporalDataFrame = allData[[name]]
+                temp = temporalDataFrame.head((totalNumberOfDays-(step*h)+step)*totalNumberOfCounties).copy().reset_index(drop=True)
+                result = pd.concat([result, temp], axis=1)
 
     # next 3 lines is for adding FIPS code to final dataframe
     temporalDataFrame = allData[['county_fips']]
-    temp = temporalDataFrame.head((totalNumberOfDays+(step*(-h-r+1)))*totalNumberOfCounties).copy().reset_index(drop=True)
+    temp = temporalDataFrame.head((totalNumberOfDays-(step*h)+step)*totalNumberOfCounties).copy().reset_index(drop=True)
     result.insert(0, 'county_fips', temp)
 
     # next 3 lines is for adding date of day (t) to final dataframe
     temporalDataFrame = allData[['date']]
-    temporalDataFrame = temporalDataFrame[totalNumberOfCounties*(step*(h-1)):]
-    temp = temporalDataFrame.head((totalNumberOfDays+(step*(-h-r+1)))*totalNumberOfCounties).copy().reset_index(drop=True)
+    temporalDataFrame = temporalDataFrame[totalNumberOfCounties*step*(h-1):]
+    temp = temporalDataFrame.head((totalNumberOfDays-(step*h)+step)*totalNumberOfCounties).copy().reset_index(drop=True)
     result.insert(1, 'date of day t', temp)
 
     # next 3 lines is for adding target to final dataframe
     temporalDataFrame = allData[[target]]
-    temporalDataFrame = temporalDataFrame.tail((totalNumberOfDays+(step*(-h-r+1)))*totalNumberOfCounties).reset_index(drop=True)
+    temporalDataFrame = temporalDataFrame.tail((totalNumberOfDays-(step*h)-(step*r)+step)*totalNumberOfCounties).reset_index(drop=True)
     result.insert(1, 'Target', temporalDataFrame)
+    
+
+    # if future_mode:
+    #   final_features = result.columns
+    #   features_to_remove = [i[7:] for i in future_features]
+    #   for name in final_features:
+    #     if name.split(' ')[0] in features_to_remove :
+    #       result.drop(name,inplace=True,axis=1)
+    
     for i in result.columns:
         if i.endswith('t-0'):
             result.rename(columns={i: i[:-2]}, inplace=True)
-
-    result.dropna(inplace=True)
     
-    ###################################################################### logarithmic target mode
-
-    if target_mode == 'logarithmic': # make target logarithmic
-        result['Target'] = np.log((result['Target'] + 1).astype(float))
         
     ######################################################################
 
     result=result.sort_values(by=['county_fips','date of day t']).reset_index(drop=True)
-    totalNumberOfDays=len(result['date of day t'].unique())
-    county_end_index=0
-    overall_non_zero_index=list()
-    for i in result['county_fips'].unique():
-        county_data = result[result['county_fips']==i]#.reset_index(drop=True)
-        county_end_index = county_end_index+len(result[result['county_fips']==i])
 
-        # we dont use counties with zero values for target variable in all history dates
-        if (county_data[target+' t'].sum()>0):
-            if h==1:
-                # find first row index with non_zero values for target variable in all history dates when history length<7 
-                first_non_zero_date_index = county_data[target+' t'].ne(0).idxmax()
-            elif h<7:
-                # find first row index with non_zero values for target variable in all history dates when history length<7 
-                first_non_zero_date_index = county_data[target+' t-'+str(h-1)].ne(0).idxmax()
-            else:
-                # find first row index with non_zero values for target variable in 7 last days of history when history length>7 
-                first_non_zero_date_index = county_data[target+' t'].ne(0).idxmax()+7
+    if zero_remove == 1 and pivot != 'country':
 
-            zero_removed_county_index=[i for i in range(first_non_zero_date_index,county_end_index)]
+        totalNumberOfDays=len(result['date of day t'].unique())
+        county_end_index=0
+        overall_non_zero_index=list()
+        for i in result['county_fips'].unique():
+            county_data = result[result['county_fips']==i]#.reset_index(drop=True)
+            county_end_index = county_end_index+len(result[result['county_fips']==i])
 
-            # in future mode we have more limited data, so we choose at least test_size days for test, validation and train sets
-            if future_mode and len(zero_removed_county_index) >= 3 * test_size:
-                overall_non_zero_index += zero_removed_county_index
+            # we dont use counties with zero values for target variable in all history dates
+            if (county_data[target+' t'].sum()>0):
+                if h==1:
+                    # find first row index with non_zero values for target variable in all history dates when history length<7 
+                    first_non_zero_date_index = county_data[target+' t'].ne(0).idxmax()
+                elif h<7:
+                    # find first row index with non_zero values for target variable in all history dates when history length<7 
+                    first_non_zero_date_index = county_data[target+' t-'+str(h-1)].ne(0).idxmax()
+                else:
+                    # find first row index with non_zero values for target variable in 7 last days of history when history length>7 
+                    first_non_zero_date_index = county_data[target+' t'].ne(0).idxmax()+7
 
-            # we choose r days for test and r days for validation so at least we must have r days for train -> 3*r
-            elif len(zero_removed_county_index) >= 3*r:
-                overall_non_zero_index = overall_non_zero_index + zero_removed_county_index
-   
+                zero_removed_county_index=[i for i in range(first_non_zero_date_index,county_end_index)]
 
-    
-    zero_removed_data=result.loc[overall_non_zero_index,:]
-    result=result.reset_index()
-    # we use reindex to avoid pandas warnings
-    zero_removed_data=result.loc[result['index'].isin(overall_non_zero_index),:]
-    zero_removed_data=zero_removed_data.drop(['index'],axis=1)
-    if pivot != 'country':
-      result = zero_removed_data
+                # in future mode we have more limited data, so we choose at least test_size days for test, validation and train sets
+                if future_mode and len(zero_removed_county_index) >= 3 * test_size:
+                    overall_non_zero_index += zero_removed_county_index
+
+                # we choose r days for test and r days for validation so at least we must have r days for train -> 3*r
+                elif len(zero_removed_county_index) >= 3*r:
+                    overall_non_zero_index = overall_non_zero_index + zero_removed_county_index
+      
+
+        
+        zero_removed_data=result.loc[overall_non_zero_index,:]
+        result=result.reset_index()
+        # we use reindex to avoid pandas warnings
+        zero_removed_data=result.loc[result['index'].isin(overall_non_zero_index),:]
+        zero_removed_data=zero_removed_data.drop(['index'],axis=1)
+        result = zero_removed_data
 
     if pivot == 'state':
         temp = result
@@ -589,12 +511,15 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 
         for social_distancing_column in social_distancing_columns:
             result[social_distancing_column] = result[social_distancing_column].map(lambda x: round(x))
+            
+        
+    ###################################################################### logarithmic target mode
 
-    if 'index' in result.columns:
-      result = result.drop(['index'],axis=1)
-    if end_date !=0 :
-      result = result.iloc[:-(end_date),:]
-    
+    if target_mode == 'logarithmic': # make target logarithmic
+        result['Target'] = np.log((result['Target'] + 1).astype(float))
+        
+    ######################################################################
+    result['date of day t']=result['date of day t'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
     return result
 
 
@@ -605,12 +530,14 @@ def main():
     feature_selection = 'mrmr'
     spatial_mode = 'country'
     target_mode = 'weeklyaverage'
-    address = '../data/'
-    future_features = []
+    address = 'C:/Users/SHR/Desktop/new code/data/'
     pivot = 'country'
-    end_date = 0
-    result = makeHistoricalData(h, r, 21, target, feature_selection, spatial_mode, target_mode,
-                       address, future_features, pivot, end_date)
+    future_features = []
+    last_date = None
+    zero_remove = 0
+    run_code = 'd14'
+    result = futuremakeHistoricalData(h, r, 21, target, feature_selection, spatial_mode, 
+                       target_mode, address, future_features, pivot, last_date, zero_remove, run_code)
     # Storing the result in a csv file
     result.to_csv('dataset_h=' + str(h) + '.csv', mode='w', index=False)
 

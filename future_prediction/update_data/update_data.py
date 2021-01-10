@@ -130,7 +130,12 @@ if __name__ == "__main__":
             csv_address+'Region_Mobility_Report_CSVs.zip')
     # get global google mobility data
     get_csv('https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv',csv_address+'Global_Mobility_Report.csv')
-    
+
+    # get international confirmed cases and death data
+    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+    ,csv_address + 'international-covid-death-data.csv')
+    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
+    ,csv_address + 'international-covid-confirmed-data.csv')
     ########################### add new weather to weather file
     if weather_flag :
         new_weather=pd.read_csv(csv_address+'new-weather.csv')

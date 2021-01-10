@@ -28,7 +28,7 @@ tf.random.set_seed(1)
 numberOfSelectedCounties = -1
 target_name = 'death'
 spatial_mode = 'country'
-country_name = 'Iran'
+country_name = 'Canada'
 future_mode = False
 pivot = 'country'
 test_size = 28
@@ -480,13 +480,13 @@ def get_updated_covid_data(address):
 def generate_updated_temporal_data(address):
     death = pd.read_csv(address+'international-covid-death-data.csv')
     confirmed = pd.read_csv(address+'international-covid-confirmed-data.csv')
-    death=death[death['Country/Region']=='Iran'].T
+    death=pd.DataFrame(death[death['Country/Region']=='Canada'].sum())
     death=death.iloc[4:,:]
     death.iloc[1:]=(death.iloc[1:].values-death.iloc[:-1].values)
     death = death.reset_index()
     death.columns = ['date','death']
     death['death']= death['death'].astype(int)
-    confirmed=confirmed[confirmed['Country/Region']=='Iran'].T
+    confirmed=pd.DataFrame(confirmed[confirmed['Country/Region']=='Canada'].sum())
     confirmed=confirmed.iloc[4:,:]
     confirmed.iloc[1:]=(confirmed.iloc[1:].values-confirmed.iloc[:-1].values)
     confirmed = confirmed.reset_index()
@@ -594,7 +594,7 @@ def plot(data):
     weeks = (len(dates)//7)
     plt.xticks([0+(i*7) for i in range(weeks)], np.array(dates)[[0+(i*7) for i in range(weeks)]])
     plt.tight_layout()
-    plt.savefig(address + 'Iran_real_prediction_values.pdf')
+    plt.savefig(address + 'Canada_real_prediction_values.pdf')
     plt.close()
 
 
@@ -806,6 +806,8 @@ def create_site_csv(data, temporal_mode, r):
         site_csv['country_number'] = 1
     elif country_name == 'Iran':
         site_csv['country_number'] = 2
+    elif country_name == 'Canada':
+        site_csv['country_number'] = 3
 
     if spatial_mode == 'country':
         site_csv['location_level'] = 1
@@ -831,9 +833,9 @@ def create_base_output(first_run):
     if first_run==1:
         data = pd.DataFrame(columns = ['date','predicted_value','real_value','model_number','death_or_confirmed','location_level','country_number','state_number','county_number','forecast_horizon_number'])
     else:
-        data = pd.read_csv("site_file_weekly_Iran.csv")
+        data = pd.read_csv("site_file_weekly_canada.csv")
     for r in range(1,10+1):
-        temp = pd.read_csv("site_file_weekly_Iran r = "+str(r)+".csv")
+        temp = pd.read_csv("site_file_weekly_canada r = "+str(r)+".csv")
         
         if first_run==1 and r==1:
             data = data.append(temp)
@@ -841,7 +843,7 @@ def create_base_output(first_run):
             data = data.append(temp.tail(1))
             
     data['forecast_horizon_number'] = 0
-    data.to_csv('site_file_weekly_Iran.csv',index = False)
+    data.to_csv('site_file_weekly_canada.csv',index = False)
     
 ########################################################## Reading predicted value of each test_point
 
@@ -865,6 +867,9 @@ def main():
     daily_output = template 
     weekly_output = template
     
+    # calculate number of possible test points for r=1
+    base_data = makeHistoricalData(5, 1, 1, target_name, 'mrmr', spatial_mode, "weeklyaverage", data_address, future_features, pivot, 0)
+    test_point_limit_r_1 = len(base_data) - 15 # 2 test & val + 13 train ((4/5)*13=10 least number of neighbor)
 
     covered_r = {r:1 for r in range(1,10+1)}
     for r in range(1,10+1):
@@ -975,6 +980,7 @@ def main():
 
             X_train = X_train[best_features]
             X_test = X_test[best_features]
+            
 
             y_prediction, y_prediction_train = run_algorithms(X_train, X_test, y_train_date, y_test_date,
                                                           best_loss, best_methods[run_code], 'test')
@@ -1059,10 +1065,10 @@ def main():
         daily_output_csv = daily_output_csv.drop_duplicates(subset = ['the day of the target variable'],keep='last')
     
         daily_site_csv = create_site_csv(daily_output_csv, 'daily', r)
-        daily_site_csv.to_csv("site_file_daily_Iran.csv", index=False)
+        daily_site_csv.to_csv("site_file_daily_Canada.csv", index=False)
 
         weekly_site_csv = create_site_csv(weekly_output_csv, 'weekly', r)
-        weekly_site_csv.to_csv("site_file_weekly_Iran r = "+str(r)+".csv", index=False)
+        weekly_site_csv.to_csv("site_file_weekly_Canada r = "+str(r)+".csv", index=False)
         
     # base result with different r's
     create_base_output(first_run)

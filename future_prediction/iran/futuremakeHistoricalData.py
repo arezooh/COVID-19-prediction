@@ -74,7 +74,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         confirmed_death['county_fips']=1
         confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
         confirmed_death=confirmed_death.sort_values(by=['date'])
-        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
+        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
         return(confirmed_death)
         
     ##################################################################### imputation
@@ -88,9 +88,9 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     print(timeDeapandantData.head())
 
     if last_date is not None :
-        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
         timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=last_date]
-        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
+        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
         
     
 
@@ -98,9 +98,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     ##################################################################### cumulative mode
     
     if target_mode == 'cumulative': # make target cumulative by adding the values of the previous day to each day
-        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
         timeDeapandantData=timeDeapandantData.sort_values(by=['date','county_fips'])
-        timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
 
         dates=timeDeapandantData['date'].unique()
         for i in range(len(dates)-1): 
@@ -115,7 +113,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     if target_mode == 'weeklyaverage': # make target weekly averaged
         
         def make_weekly(dailydata):
-            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
             if 'weekend' in dailydata.columns:
               dailydata.drop(['weekend'],axis=1,inplace=True)
             # add weekday to find epidemic weeks
@@ -139,7 +137,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
                 weeklydata=weeklydata.append(temp_df)
             weeklydata.sort_values(by=['county_fips','date'],inplace=True)
             weeklydata=weeklydata.reset_index(drop=True)
-            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
+            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
             return(weeklydata)
 
         
@@ -150,7 +148,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     if target_mode == 'weeklymovingaverage':
         def make_moving_weekly_average(dailydata):
             dailydata = dailydata.astype({col: 'float64' for col in dailydata.columns.drop(['county_fips','date'])})
-            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
             dailydata.sort_values(by=['date','county_fips'],inplace=True)
             numberofcounties=len(dailydata['county_fips'].unique())
             numberofdays=len(dailydata['date'].unique())
@@ -171,7 +169,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
                     dailydata=dailydata.iloc[:-(numberofcounties),:]# remove last day for all counties from daily data
                     numberofdays = numberofdays-1
             weeklydata=weeklydata.sort_values(by=['county_fips','date'])
-            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
+            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
 
             return(weeklydata)
         timeDeapandantData=make_moving_weekly_average(timeDeapandantData)
@@ -180,7 +178,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
     if target_mode == 'augmentedweeklyaverage':
       
         def make_moving_weekly_average(dailydata):
-            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+            dailydata['date']=dailydata['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
             if 'weekend' in dailydata.columns:
               dailydata.drop(['weekend'],axis=1,inplace=True)
             # add weekday to find epidemic weeks
@@ -210,7 +208,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
                 dailydata=dailydata.iloc[:-(numberofcounties),:]# remove last day for all counties from daily data
                 numberofdays = numberofdays-1
             weeklydata=weeklydata.sort_values(by=['county_fips','date'])
-            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
+            weeklydata['date']=weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
 
             return(weeklydata)
         timeDeapandantData=make_moving_weekly_average(timeDeapandantData)
@@ -282,7 +280,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         allData = pd.merge(independantOfTimeData, timeDeapandantData, on='county_fips')
     else:
         allData = timeDeapandantData
-    allData['date']=allData['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+
     allData = allData.sort_values(by=['date', 'county_fips'])
     allData = allData.reset_index(drop=True)
 
@@ -498,7 +496,6 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         result['Target'] = np.log((result['Target'] + 1).astype(float))
         
     ######################################################################
-    result['date of day t']=result['date of day t'].apply(lambda x: datetime.datetime.strftime(x,'%m/%d/%y'))
     return result
 
 

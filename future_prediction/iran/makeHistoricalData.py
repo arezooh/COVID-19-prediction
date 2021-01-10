@@ -66,7 +66,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         confirmed_death['county_fips']=1
         confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
         confirmed_death=confirmed_death.sort_values(by=['date'])
-        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
+        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
         return(confirmed_death)
     
     def get_csv(web_addres,file_address):
@@ -107,7 +107,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     if target_mode == 'weeklyaverage':  # make target weekly averaged
 
         def make_weekly(dailydata):
-            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%m/%d/%y'))
+            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%y/%m/%d'))
             # dailydata.drop(['weekend'],axis=1,inplace=True)
             # add weekday to find epidemic weeks
             dailydata['weekday'] = dailydata['date'].apply(lambda x: x.weekday())
@@ -140,7 +140,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     ###################################################################### weekly moving average mode
     if target_mode == 'weeklymovingaverage':
         def make_moving_weekly_average(dailydata):
-            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%m/%d/%y'))
+            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%y/%m/%d'))
             dailydata.sort_values(by=['date', 'county_fips'], inplace=True)
             numberofcounties = len(dailydata['county_fips'].unique())
             numberofdays = len(dailydata['date'].unique())
@@ -162,7 +162,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
                 dailydata = dailydata.iloc[:-(numberofcounties), :]  # remove last day for all counties from daily data
                 numberofdays = numberofdays - 1
             weeklydata = weeklydata.sort_values(by=['county_fips', 'date'])
-            weeklydata['date'] = weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x, '%m/%d/%y'))
+            weeklydata['date'] = weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x, '%y/%m/%d'))
 
             return (weeklydata)
 
@@ -173,7 +173,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         print('augmentedweeklyaverage')
 
         def make_moving_weekly_average(dailydata):
-            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%m/%d/%y'))
+            dailydata['date'] = dailydata['date'].apply(lambda x: datetime.datetime.strptime(x, '%y/%m/%d'))
             dailydata.drop(['weekend'], axis=1, inplace=True)
             # add weekday to find epidemic weeks
             dailydata['weekday'] = dailydata['date'].apply(lambda x: x.weekday())
@@ -203,7 +203,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
                 dailydata = dailydata.iloc[:-(numberofcounties), :]  # remove last day for all counties from daily data
                 numberofdays = numberofdays - 1
             weeklydata = weeklydata.sort_values(by=['county_fips', 'date'])
-            weeklydata['date'] = weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x, '%m/%d/%y'))
+            weeklydata['date'] = weeklydata['date'].apply(lambda x: datetime.datetime.strftime(x, '%y/%m/%d'))
 
             return (weeklydata)
 
