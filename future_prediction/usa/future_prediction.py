@@ -870,6 +870,8 @@ def create_base_output(first_run):
         else:
             data = data.append(temp.tail(1))
             
+    data = data.drop_duplicates(subset = ['date'],keep='last')
+    
     data['forecast_horizon_number'] = 0
     data.to_csv('site_file_weekly_US.csv',index = False)
     
