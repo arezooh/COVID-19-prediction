@@ -9,6 +9,7 @@ from sklearn.impute import KNNImputer
 import datetime
 import os
 from zipfile import ZipFile
+from sys import argv
 
 # self imports
 import debug
@@ -19,7 +20,7 @@ import medium
 csv_address = '../csvFiles/'
 
 first_run = 1
-weather_flag = 1 # decide for downloading weather data or not
+weather_flag = int(argv[1]) # decide for downloading weather data or not
 
 save_address = csv_address
 if weather_flag == 0:
