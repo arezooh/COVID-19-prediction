@@ -7,8 +7,8 @@ from datetime import date, timedelta
 import debug
 
 # defines
-_CSV_Directory_ = '../csvFiles/'
-_JSON_Directory_ = '../jsonFiles/'
+_CSV_Directory_ = './csvFiles/'
+_JSON_Directory_ = './jsonFiles/'
 
 class handler_csv:
     def __init__(self):

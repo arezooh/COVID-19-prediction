@@ -17,7 +17,7 @@ import handlers
 import extractor
 import medium
 
-csv_address = '../csvFiles/'
+csv_address = './csvFiles/'
 
 first_run = 1
 weather_flag = int(argv[1]) # decide for downloading weather data or not

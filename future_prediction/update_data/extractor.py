@@ -15,8 +15,8 @@ def debug_seprate():
 import debug
 
 # defines
-_CSV_Directory_ = '../csvFiles/'
-_JSON_Directory_ = '../jsonFiles/'
+_CSV_Directory_ = './csvFiles/'
+_JSON_Directory_ = './jsonFiles/'
 
 # An object for downloading data online and save to drive
 class extractor:
