@@ -18,12 +18,13 @@ import matplotlib.pyplot as plt
 from pexecute.process import ProcessLoom
 import subprocess
 from zipfile import ZipFile
+from sys import argv
 
-address = './usa/'
+address = './'
 if int(argv[1]) == 1 :
-    data_address = './csvFiles/'
+    data_address = '../csvFiles/'
 else :
-    data_address = './csvFiles/weatherless/'
+    data_address = '../csvFiles/weatherless/'
 
 seed(1)
 tf.random.set_seed(1)
@@ -688,7 +689,7 @@ def get_current_date(data,temporal_mode):
     data.sort_values(by=['date','county_fips'],inplace=True)
     data = data.reset_index(drop=True)
     data = data[data['weekday']==5]
-    current_date = datetime.datetime.strptime('12/26/20','%m/%d/%y')#max(data['date'])
+    current_date = max(data['date'])
   return(current_date)
 
 ############################## reading data
@@ -904,7 +905,7 @@ def main():
         print(200 * '*')
         print('r = ',r)
         
-        subprocess.call("python ./prediction.py "+str(r)+" weeklyaverage 0"+str(argv[1])+, shell=True)
+        subprocess.call("python ./prediction.py "+str(r)+" weeklyaverage 0 "+str(argv[1]), shell=True)
 
 
     updated_best_r,updated_best_methods,updated_best_covariates,updated_best_h,updated_best_error,covered_r = find_best_configuration(address+"weeklyaverage/")
@@ -1008,7 +1009,7 @@ def main():
 
             X_train = X_train[best_features]
             X_test = X_test[best_features]
-
+            X_train.to_csv('X_train.csv')
             y_prediction, y_prediction_train = run_algorithms(X_train, X_test, y_train_date, y_test_date,
                                                           best_loss, best_methods[run_code], 'test')
 

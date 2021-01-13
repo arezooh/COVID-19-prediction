@@ -68,7 +68,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         confirmed_death['county_fips']=1
         confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
         confirmed_death=confirmed_death.sort_values(by=['date'])
-        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
+        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
         return(confirmed_death)
     
     def get_csv(web_addres,file_address):
@@ -605,7 +605,7 @@ def main():
     feature_selection = 'mrmr'
     spatial_mode = 'country'
     target_mode = 'weeklyaverage'
-    address = '../data/'
+    address = '../csvFiles/'
     future_features = []
     pivot = 'country'
     end_date = 0

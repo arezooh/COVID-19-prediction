@@ -75,7 +75,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         confirmed_death['county_fips']=1
         confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
         confirmed_death=confirmed_death.sort_values(by=['date'])
-        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%m/%d/%y'))
+        confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
         return(confirmed_death)
         
     ##################################################################### imputation
@@ -159,7 +159,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
               data.loc[~pd.isnull(data[col]),col] = data.loc[~pd.isnull(data[col]),col].apply(lambda x:round(x))
             data['county_fips'] = 1
             data = data.drop(['confirmed','death'],axis=1)
-            country_confirmed_death = generate_country_covid_data('../csvFiles')
+            country_confirmed_death = generate_country_covid_data('../csvFiles/')
             if not drop_covariates:
               data=pd.merge(data,country_confirmed_death,how='left',on=['date','county_fips'])
             else:
@@ -169,7 +169,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         timeDeapandantData = country_aggregate(timeDeapandantData)
         
     if mobility_flag:
-            mobility=pd.read_csv('../csvFiles' + 'Global_Mobility_Report.csv')
+            mobility=pd.read_csv('../csvFiles/' + 'Global_Mobility_Report.csv')
             mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
             mobility=mobility[['date',
                    'retail_and_recreation_percent_change_from_baseline',
@@ -610,7 +610,7 @@ def main():
     feature_selection = 'mrmr'
     spatial_mode = 'country'
     target_mode = 'weeklyaverage'
-    address = './'
+    address = '../csvFiles/'
     pivot = 'country'
     future_features = []
     last_date = None
