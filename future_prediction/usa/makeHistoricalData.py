@@ -190,11 +190,13 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         mobility.loc[:,'date'] = mobility['date'].apply(lambda x : datetime.datetime.strptime(x,'%Y-%m-%d'))
         timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strptime(x,'%y/%m/%d'))
         timeDeapandantData = pd.merge(timeDeapandantData,mobility,how='left',on=['date'])
-        Start_date = mobility['date'].min()
+        Start_date = timeDeapandantData['date'].min()
         End_date = min(mobility['date'].max(),timeDeapandantData['date'].max())
         timeDeapandantData = timeDeapandantData[timeDeapandantData['date']>=Start_date]
         timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=End_date]
         timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
+        for col in mobility.columns:
+            timeDeapandantData.loc[pd.isna(timeDeapandantData[col]),col] = 0
         social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
         timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
 

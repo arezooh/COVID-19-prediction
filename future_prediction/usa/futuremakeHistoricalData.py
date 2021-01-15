@@ -182,11 +182,13 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
             mobility.loc[:,'date'] = mobility['date'].apply(lambda x : datetime.datetime.strptime(x,'%Y-%m-%d'))
             timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strptime(x,'%y/%m/%d'))
             timeDeapandantData = pd.merge(timeDeapandantData,mobility,how='left',on=['date'])
-            start_date = mobility['date'].min()
+            start_date = timeDeapandantData['date'].min()
             end_date = min(mobility['date'].max(),timeDeapandantData['date'].max())
             timeDeapandantData = timeDeapandantData[timeDeapandantData['date']>=start_date]
             timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=end_date]
             timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
+            for col in mobility.columns:
+                timeDeapandantData.loc[pd.isna(timeDeapandantData[col]),col] = 0
             social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
             timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
 
@@ -604,8 +606,8 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
 
 
 def main():
-    h = 0
-    r = 4
+    h = 5
+    r = 10
     target = 'death'
     feature_selection = 'mrmr'
     spatial_mode = 'country'
