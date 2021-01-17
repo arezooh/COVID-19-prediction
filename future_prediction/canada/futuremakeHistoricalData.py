@@ -106,7 +106,6 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         timeDeapandantData.loc[:,'date'] = timeDeapandantData['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
         social_distancing_columns = [col for col in timeDeapandantData if col.startswith('social-distancing')]
         timeDeapandantData = timeDeapandantData.drop(social_distancing_columns, axis=1)
-    timeDeapandantData.to_csv('dailydata.csv') 
 
     print(timeDeapandantData.head())
 

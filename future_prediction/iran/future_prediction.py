@@ -19,7 +19,7 @@ from pexecute.process import ProcessLoom
 import subprocess
 from zipfile import ZipFile
 
-address = './'
+address = './iran/'
 data_address = './csvFiles/'
 
 seed(1)
@@ -345,7 +345,7 @@ def get_errors(y_prediction, y_prediction_train, y_test_date, y_train_date, regu
         y_prediction = np.round(y_prediction)
     # for calculating the country error we must sum up all the county's target values to get country target value
     y_test_date['prediction'] = y_prediction
-    y_test_date.to_csv('errors.csv')
+    y_test_date.to_csv(address + 'errors.csv')
     y_test_date_country = y_test_date.groupby(['date of day t']).sum()
     y_test_country = np.array(y_test_date_country['Target']).reshape(-1)
     y_prediction_country = np.array(y_test_date_country['prediction']).reshape(-1)
@@ -831,9 +831,9 @@ def create_base_output(first_run):
     if first_run==1:
         data = pd.DataFrame(columns = ['date','predicted_value','real_value','model_number','death_or_confirmed','location_level','country_number','state_number','county_number','forecast_horizon_number'])
     else:
-        data = pd.read_csv("site_file_weekly_Iran.csv")
+        data = pd.read_csv(address + "site_file_weekly_Iran.csv")
     for r in range(1,10+1):
-        temp = pd.read_csv("site_file_weekly_Iran r = "+str(r)+".csv")
+        temp = pd.read_csv(address + "site_file_weekly_Iran r = "+str(r)+".csv")
         
         if first_run==1 and r==1:
             data = data.append(temp)
@@ -843,7 +843,7 @@ def create_base_output(first_run):
     data = data.drop_duplicates(subset = ['date'],keep='last')
             
     data['forecast_horizon_number'] = 0
-    data.to_csv('site_file_weekly_Iran.csv',index = False)
+    data.to_csv(address + 'site_file_weekly_Iran.csv',index = False)
     
 ########################################################## Reading predicted value of each test_point
 
@@ -929,11 +929,11 @@ def main():
         
         all_data,all_regular_data = read_data(h, r, test_size, target_name, target_mode, future_features, pivot, current_date, run_code)
         
-##        all_data.to_csv(str(h)+'-'+str(r)+'data.csv',index=False)
-#         regular_data.to_csv(str(h)+'-'+str(r)+'regular_data.csv',index=False)
+##        all_data.to_csv(address + str(h)+'-'+str(r)+'data.csv',index=False)
+#         regular_data.to_csv(address + str(h)+'-'+str(r)+'regular_data.csv',index=False)
         
-        # data = pd.read_csv(str(h)+'-'+str(r)+'data.csv')
-        # regular_data = pd.read_csv(str(h)+'-'+str(r)+'regular_data.csv')
+        # data = pd.read_csv(address + str(h)+'-'+str(r)+'data.csv')
+        # regular_data = pd.read_csv(address + str(h)+'-'+str(r)+'regular_data.csv')
         
         for point in range(1,r+1):
             future_point = r-point
@@ -997,10 +997,10 @@ def main():
         daily_output['Prediction Date']=daily_output['Prediction Date'].apply(lambda x: datetime.datetime.strftime(x,'%Y-%m-%d'))
     
         if first_run==0: 
-            weekly_output_csv = pd.read_csv("weekly_backup r = "+str(r)+".csv")
+            weekly_output_csv = pd.read_csv(address + "weekly_backup r = "+str(r)+".csv")
             weekly_output_csv = weekly_output_csv.append(weekly_output)
 
-            daily_output_csv = pd.read_csv("daily_backup.csv")
+            daily_output_csv = pd.read_csv(address + "daily_backup.csv")
             daily_output_csv = daily_output_csv.append(daily_output)
 
 
@@ -1019,8 +1019,8 @@ def main():
                daily_output_csv.loc[daily_output_csv[col].duplicated(), col]=np.nan
                weekly_output_csv.loc[weekly_output_csv[col].duplicated(), col]=np.nan
 
-        daily_output_csv.to_csv('daily_backup.csv',index = False)
-        weekly_output_csv.to_csv('weekly_backup r = '+str(r)+'.csv',index = False)
+        daily_output_csv.to_csv(address + 'daily_backup.csv',index = False)
+        weekly_output_csv.to_csv(address + 'weekly_backup r = '+str(r)+'.csv',index = False)
 
 
         ############################## prepare output csv file
@@ -1054,17 +1054,17 @@ def main():
         # save plot of real and predicted values
         # plot(daily_output_csv)
 
-        daily_output_csv.to_excel("Daily-Deaths-Prediction.xlsx", index=False)
-        weekly_output_csv.to_excel("Weekly-Deaths-Prediction r = "+str(r)+".xlsx", index=False)
+        daily_output_csv.to_excel(address + "Daily-Deaths-Prediction.xlsx", index=False)
+        weekly_output_csv.to_excel(address + "Weekly-Deaths-Prediction r = "+str(r)+".xlsx", index=False)
 
         weekly_output_csv = weekly_output_csv.drop_duplicates(subset = ['the week of the target variable'],keep='last')
         daily_output_csv = daily_output_csv.drop_duplicates(subset = ['the day of the target variable'],keep='last')
     
         daily_site_csv = create_site_csv(daily_output_csv, 'daily', r)
-        daily_site_csv.to_csv("site_file_daily_Iran.csv", index=False)
+        daily_site_csv.to_csv(address + "site_file_daily_Iran.csv", index=False)
 
         weekly_site_csv = create_site_csv(weekly_output_csv, 'weekly', r)
-        weekly_site_csv.to_csv("site_file_weekly_Iran r = "+str(r)+".csv", index=False)
+        weekly_site_csv.to_csv(address + "site_file_weekly_Iran r = "+str(r)+".csv", index=False)
         
     # base result with different r's
     create_base_output(first_run)

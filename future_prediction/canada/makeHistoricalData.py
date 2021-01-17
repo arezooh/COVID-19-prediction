@@ -356,8 +356,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
         ix = ranking_data.corr().abs().sort_values('target', ascending=False).index.drop(['target'])
     print(ix)
 
-    if os.path.exists("./"+target_mode+"/"+str(r)+"/") and end_date == 0 :
-        pd.DataFrame(np.array(ix),columns=['name']).to_csv("./"+target_mode+"/"+str(r)+"/covariates_rank.csv",index=False)
+    if os.path.exists("./canada/"+target_mode+"/"+str(r)+"/") and end_date == 0 :
+        pd.DataFrame(np.array(ix),columns=['name']).to_csv("./canada/"+target_mode+"/"+str(r)+"/covariates_rank.csv",index=False)
     
     #################################################################### making historical data 
 
