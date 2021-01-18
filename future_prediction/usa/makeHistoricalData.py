@@ -96,7 +96,7 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
 #     with ZipFile(zipFileName, 'r') as zip:
 #         temporal_file = zip.extract(temporal_address)
 #     timeDeapandantData = pd.read_csv(temporal_file)
-    independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
+    independantOfTimeData = pd.read_csv('./csvFiles/' + 'fixed-data.csv')
     timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
     
     timeDeapandantData['weekend']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strptime(x,'%y/%m/%d'))
@@ -122,12 +122,14 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
                                                 'temperature','precipitation',]
     if pivot != 'country':
         for i in timeDeapandant_features_with_nulls:
-            nullind=timeDeapandantData.loc[pd.isnull(timeDeapandantData[i]),'county_fips'].unique()
-            timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
-            independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
+            if i in timeDeapandantData.columns:
+                nullind=timeDeapandantData.loc[pd.isnull(timeDeapandantData[i]),'county_fips'].unique()
+                timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
+                independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
     else:
         for i in timeDeapandant_features_with_nulls:
-            timeDeapandantData = mean_impute_feature(timeDeapandantData,i)
+            if i in timeDeapandantData.columns:
+                timeDeapandantData = mean_impute_feature(timeDeapandantData,i)
 
     if pivot == 'country':
         def country_aggregate(data):
@@ -170,14 +172,14 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
               data.loc[~pd.isnull(data[col]),col] = data.loc[~pd.isnull(data[col]),col].apply(lambda x:round(x))
             data['county_fips'] = 1
             data = data.drop(['confirmed','death'],axis=1)
-            country_confirmed_death = generate_country_covid_data('../csvFiles/')
+            country_confirmed_death = generate_country_covid_data('./csvFiles/')
             data=pd.merge(data,country_confirmed_death,how='left',on=['county_fips','date'])
             return(data)
 
         timeDeapandantData = country_aggregate(timeDeapandantData)
 
     if mobility_flag:
-        mobility=pd.read_csv('../csvFiles/'+'Global_Mobility_Report.csv')
+        mobility=pd.read_csv('./csvFiles/'+'Global_Mobility_Report.csv')
         mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
         mobility=mobility[['date',
                'retail_and_recreation_percent_change_from_baseline',
@@ -440,8 +442,8 @@ def makeHistoricalData(h, r, test_size, target, feature_selection, spatial_mode,
     else:
         ix = ranking_data.corr().abs().sort_values('target', ascending=False).index.drop(['target'])
 
-    if os.path.exists("./"+target_mode+"/"+str(r)+"/") and end_date == 0 :
-        pd.DataFrame(np.array(ix),columns=['name']).to_csv("./"+target_mode+"/"+str(r)+"/covariates_rank.csv",index=False)
+    if os.path.exists("./usa/"+target_mode+"/"+str(r)+"/") and end_date == 0 :
+        pd.DataFrame(np.array(ix),columns=['name']).to_csv("./usa/"+target_mode+"/"+str(r)+"/covariates_rank.csv",index=False)
 
     #################################################################### making historical data 
 

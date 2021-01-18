@@ -58,9 +58,9 @@ if target_mode == 'regular':maxHistory = 10
 maxC = 100  # maximum number of covariates to be considered
 
 if int(argv[4]) == 1 :
-    data_address = '../csvFiles/'
+    data_address = './csvFiles/'
 else :
-    data_address = '../csvFiles/weatherless/'
+    data_address = './csvFiles/weatherless/'
 ######################################################### split data to train, val, test
 def splitData(numberOfCounties, main_data, target, spatial_mode, mode):
     numberOfCounties = len(main_data['county_fips'].unique())
@@ -1587,10 +1587,10 @@ if __name__ == "__main__":
             force_features.append('future-' + future_features[f])
 
     # make directories for saving the results
-    validation_address = './' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/validation/'
-    test_address = './' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/test/'
-    env_address = './' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/session_parameters/'
-    mail_address = './' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/email'
+    validation_address = './usa/' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/validation/'
+    test_address = './usa/' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/test/'
+    env_address = './usa/' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/session_parameters/'
+    mail_address = './usa/' + target_mode + '/' + str(r) + '/' + str(end_date) + '/results/counties=' + str(numberOfSelectedCountiesname) + '/email'
 
     if not os.path.exists(mail_address):
         os.makedirs(mail_address)

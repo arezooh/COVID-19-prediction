@@ -20,11 +20,11 @@ import subprocess
 from zipfile import ZipFile
 from sys import argv
 
-address = './'
+address = './usa/'
 if int(argv[1]) == 1 :
-    data_address = '../csvFiles/'
+    data_address = './csvFiles/'
 else :
-    data_address = '../csvFiles/weatherless/'
+    data_address = './csvFiles/weatherless/'
 
 seed(1)
 tf.random.set_seed(1)
@@ -40,7 +40,7 @@ max_history = 14
 future_features = []
 selected_futures = []
 
-first_run = 1
+first_run = 0
 # 'd' shows daily mode, 'w' shows weekly mode, 's' shows weekly mode with scenario testing,
 # 'm' shows daily mode with LSTM MM_GLM, 'b' shows daily mode with best method obtained from search
 # and numbers shows 'r' (number of days in future)
@@ -347,7 +347,7 @@ def get_errors(y_prediction, y_prediction_train, y_test_date, y_train_date, regu
         y_prediction = np.round(y_prediction)
     # for calculating the country error we must sum up all the county's target values to get country target value
     y_test_date['prediction'] = y_prediction
-    y_test_date.to_csv('errors.csv')
+    y_test_date.to_csv(address + 'errors.csv')
     y_test_date_country = y_test_date.groupby(['date of day t']).sum()
     y_test_country = np.array(y_test_date_country['Target']).reshape(-1)
     y_prediction_country = np.array(y_test_date_country['prediction']).reshape(-1)
@@ -793,9 +793,9 @@ def create_CDC_file(first_run):
     if first_run==1:
         data = pd.DataFrame(columns = ['forecast_date','target','target_end_date','location','type','quantile','value'])
     else:
-        data = pd.read_csv("CDC_file.csv")
+        data = pd.read_csv(address + "CDC_file.csv")
     for r in range(4,10+1):
-        temp = pd.read_excel("Weekly-Deaths-Prediction r = "+str(r)+".xlsx")
+        temp = pd.read_excel(address + "Weekly-Deaths-Prediction r = "+str(r)+".xlsx")
         temp.rename(columns={'the day the prediction is made':'forecast_date',
                                         'the week of the target variable':'target_end_date', 'Prediction':'value'},inplace = True)
         temp['target'] = np.NaN
@@ -815,7 +815,7 @@ def create_CDC_file(first_run):
 
         temp = temp[['forecast_date','target','target_end_date','location','type','quantile','value']]
         data = data.append(temp)
-    data.to_csv("CDC_file.csv", index=False)
+    data.to_csv(address + "CDC_file.csv", index=False)
 
 ############################################### prepare site file
 
@@ -862,9 +862,9 @@ def create_base_output(first_run):
     if first_run==1:
         data = pd.DataFrame(columns = ['date','predicted_value','real_value','model_number','death_or_confirmed','location_level','country_number','state_number','county_number','forecast_horizon_number'])
     else:
-        data = pd.read_csv("site_file_weekly_US.csv")
+        data = pd.read_csv(address + "site_file_weekly_US.csv")
     for r in range(1,10+1):
-        temp = pd.read_csv("site_file_weekly_US r = "+str(r)+".csv")
+        temp = pd.read_csv(address + "site_file_weekly_US r = "+str(r)+".csv")
         
         if first_run==1 and r==1:
             data = data.append(temp)
@@ -874,7 +874,7 @@ def create_base_output(first_run):
     data = data.drop_duplicates(subset = ['date'],keep='last')
     
     data['forecast_horizon_number'] = 0
-    data.to_csv('site_file_weekly_US.csv',index = False)
+    data.to_csv(address + 'site_file_weekly_US.csv',index = False)
     
 ########################################################## Reading predicted value of each test_point
 
@@ -887,7 +887,7 @@ def get_test_point_value(address,test_point,r):
 
 def main():
 
-#     get_updated_covid_data(address)
+    get_updated_covid_data(address)
     
     template = pd.DataFrame(columns=['Prediction Date','Date', 'Real', 'Prediction', 'Model', 'MASE (test)',\
                                'MAPE (test)', 'MAE (test)', 'Absolute Error',\
@@ -905,7 +905,7 @@ def main():
         print(200 * '*')
         print('r = ',r)
         
-        subprocess.call("python ./prediction.py "+str(r)+" weeklyaverage 0 "+str(argv[1]), shell=True)
+        subprocess.call("python ./usa/prediction.py "+str(r)+" weeklyaverage 0 "+str(argv[1]), shell=True)
 
 
     updated_best_r,updated_best_methods,updated_best_covariates,updated_best_h,updated_best_error,covered_r = find_best_configuration(address+"weeklyaverage/")
@@ -961,11 +961,11 @@ def main():
         
         all_data,all_regular_data = read_data(h, r, test_size, target_name, target_mode, future_features, pivot, current_date, run_code)
         
-#         data.to_csv(str(h)+'-'+str(r)+'data.csv',index=False)
-#         regular_data.to_csv(str(h)+'-'+str(r)+'regular_data.csv',index=False)
+#         data.to_csv(address + str(h)+'-'+str(r)+'data.csv',index=False)
+#         regular_data.to_csv(address + str(h)+'-'+str(r)+'regular_data.csv',index=False)
         
-        # data = pd.read_csv(str(h)+'-'+str(r)+'data.csv')
-        # regular_data = pd.read_csv(str(h)+'-'+str(r)+'regular_data.csv')
+        # data = pd.read_csv(address + str(h)+'-'+str(r)+'data.csv')
+        # regular_data = pd.read_csv(address + str(h)+'-'+str(r)+'regular_data.csv')
         
         for point in range(1,r+1):
             future_point = r-point
@@ -1009,7 +1009,7 @@ def main():
 
             X_train = X_train[best_features]
             X_test = X_test[best_features]
-            X_train.to_csv('X_train.csv')
+            
             y_prediction, y_prediction_train = run_algorithms(X_train, X_test, y_train_date, y_test_date,
                                                           best_loss, best_methods[run_code], 'test')
 
@@ -1029,10 +1029,10 @@ def main():
         daily_output['Prediction Date']=daily_output['Prediction Date'].apply(lambda x: datetime.datetime.strftime(x,'%Y-%m-%d'))
     
         if first_run==0: 
-            weekly_output_csv = pd.read_csv("weekly_backup r = "+str(r)+".csv")
+            weekly_output_csv = pd.read_csv(address + "weekly_backup r = "+str(r)+".csv")
             weekly_output_csv = weekly_output_csv.append(weekly_output)
 
-            daily_output_csv = pd.read_csv("daily_backup.csv")
+            daily_output_csv = pd.read_csv(address + "daily_backup.csv")
             daily_output_csv = daily_output_csv.append(daily_output)
 
 
@@ -1051,8 +1051,8 @@ def main():
                daily_output_csv.loc[daily_output_csv[col].duplicated(), col]=np.nan
                weekly_output_csv.loc[weekly_output_csv[col].duplicated(), col]=np.nan
 
-        daily_output_csv.to_csv('daily_backup.csv',index = False)
-        weekly_output_csv.to_csv('weekly_backup r = '+str(r)+'.csv',index = False)
+        daily_output_csv.to_csv(address + 'daily_backup.csv',index = False)
+        weekly_output_csv.to_csv(address + 'weekly_backup r = '+str(r)+'.csv',index = False)
 
 
         ############################## prepare output csv file
@@ -1086,17 +1086,17 @@ def main():
         # save plot of real and predicted values
         # plot(daily_output_csv)
 
-        daily_output_csv.to_excel("Daily-Deaths-Prediction.xlsx", index=False)
-        weekly_output_csv.to_excel("Weekly-Deaths-Prediction r = "+str(r)+".xlsx", index=False)
+        daily_output_csv.to_excel(address + "Daily-Deaths-Prediction.xlsx", index=False)
+        weekly_output_csv.to_excel(address + "Weekly-Deaths-Prediction r = "+str(r)+".xlsx", index=False)
 
         weekly_output_csv = weekly_output_csv.drop_duplicates(subset = ['the week of the target variable'],keep='last')
         daily_output_csv = daily_output_csv.drop_duplicates(subset = ['the day of the target variable'],keep='last')
     
         daily_site_csv = create_site_csv(daily_output_csv, 'daily', r)
-        daily_site_csv.to_csv("site_file_daily_US.csv", index=False)
+        daily_site_csv.to_csv(address + "site_file_daily_US.csv", index=False)
 
         weekly_site_csv = create_site_csv(weekly_output_csv, 'weekly', r)
-        weekly_site_csv.to_csv("site_file_weekly_US r = "+str(r)+".csv", index=False)
+        weekly_site_csv.to_csv(address + "site_file_weekly_US r = "+str(r)+".csv", index=False)
         
     create_CDC_file(first_run)
     create_base_output(first_run)

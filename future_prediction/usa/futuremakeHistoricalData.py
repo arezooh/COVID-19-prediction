@@ -87,7 +87,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
 #     with ZipFile(zipFileName, 'r') as zip:
 #         temporal_file = zip.extract(temporal_address)
 #     timeDeapandantData = pd.read_csv(temporal_file)
-    independantOfTimeData = pd.read_csv(address + 'fixed-data.csv')
+    independantOfTimeData = pd.read_csv('./csvFiles/' + 'fixed-data.csv')
     timeDeapandantData = pd.read_csv(address + 'temporal-data.csv')
 
     independantOfTimeData = independantOfTimeData.astype({col: 'float64' for col in independantOfTimeData.columns.drop(['county_fips','state_fips', 'state_name', 'county_name'])})
@@ -111,12 +111,14 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
                                                 'temperature','precipitation',]
     if pivot != 'country':
         for i in timeDeapandant_features_with_nulls:
-            nullind=timeDeapandantData.loc[pd.isnull(timeDeapandantData[i]),'county_fips'].unique()
-            timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
-            independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
+            if i in timeDeapandantData.columns:
+                nullind=timeDeapandantData.loc[pd.isnull(timeDeapandantData[i]),'county_fips'].unique()
+                timeDeapandantData=timeDeapandantData[~timeDeapandantData['county_fips'].isin(nullind)]
+                independantOfTimeData=independantOfTimeData[~independantOfTimeData['county_fips'].isin(nullind)]
     else:
         for i in timeDeapandant_features_with_nulls:
-            timeDeapandantData = mean_impute_feature(timeDeapandantData,i)
+            if i in timeDeapandantData.columns:
+                timeDeapandantData = mean_impute_feature(timeDeapandantData,i)
 
     if pivot == 'country':
         def country_aggregate(data):
@@ -159,7 +161,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
               data.loc[~pd.isnull(data[col]),col] = data.loc[~pd.isnull(data[col]),col].apply(lambda x:round(x))
             data['county_fips'] = 1
             data = data.drop(['confirmed','death'],axis=1)
-            country_confirmed_death = generate_country_covid_data('../csvFiles/')
+            country_confirmed_death = generate_country_covid_data('./csvFiles/')
             if not drop_covariates:
               data=pd.merge(data,country_confirmed_death,how='left',on=['date','county_fips'])
             else:
@@ -169,7 +171,7 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         timeDeapandantData = country_aggregate(timeDeapandantData)
         
     if mobility_flag:
-            mobility=pd.read_csv('../csvFiles/' + 'Global_Mobility_Report.csv')
+            mobility=pd.read_csv('./csvFiles/' + 'Global_Mobility_Report.csv')
             mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
             mobility=mobility[['date',
                    'retail_and_recreation_percent_change_from_baseline',
@@ -197,7 +199,6 @@ def futuremakeHistoricalData(h, r, test_size, target, feature_selection, spatial
         timeDeapandantData = timeDeapandantData[timeDeapandantData['date']<=last_date]
         timeDeapandantData['date']=timeDeapandantData['date'].apply(lambda x: datetime.datetime.strftime(x,'%y/%m/%d'))
 
-    timeDeapandantData.to_csv('futuretimeDeapandantData.csv')
     ##################################################################### cumulative mode
     
     if target_mode == 'cumulative': # make target cumulative by adding the values of the previous day to each day
