@@ -58,8 +58,8 @@ def main():
      # its mean that downloading weather data is interrupted in the middle of the run and we must run the main
      # procedure again so we ignore the parts which are run before downloading weather data 
     if weather_stop == 0:
-          subprocess.call("python ./update_data/update_data.py f 0", shell=True)
-          print('Data updated without weather')
+        subprocess.call("python ./update_data/update_data.py f 0", shell=True)
+        print('Data updated without weather')
 
         if update_status('iran'):
             subprocess.call("python ./iran/future_prediction.py", shell=True)
@@ -88,7 +88,7 @@ def main():
             subprocess.call("python ./usa/future_prediction.py 1", shell=True)
             print('USA prediction using data includes weather is updated')
             push("US predictions updated using weather+ data")
-        subprocess.call("python ./update_data/all_features_update_data.py", shell=True) # update data with all features
+            subprocess.call("python ./update_data/all_features_update_data.py", shell=True) # update data with all features
         
         
 if __name__ == "__main__":
