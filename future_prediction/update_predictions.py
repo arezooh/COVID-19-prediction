@@ -8,8 +8,7 @@ import pandas as pd
 import datetime
 
 
-first_run = int(argv[1])
-weather_stop = int(argv[2])
+weather_stop = int(argv[1])
 
 ########################################################### push results to github
 def push(message):

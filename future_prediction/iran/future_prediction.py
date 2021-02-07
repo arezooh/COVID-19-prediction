@@ -828,14 +828,12 @@ def create_site_csv(data, temporal_mode, r):
 ################################################## creating site csv for different r's
 
 def create_base_output(first_run):
-    if first_run==1:
-        data = pd.DataFrame(columns = ['date','predicted_value','real_value','model_number','death_or_confirmed','location_level','country_number','state_number','county_number','forecast_horizon_number'])
-    else:
-        data = pd.read_csv(address + "site_file_weekly_Iran.csv")
+    data = pd.DataFrame(columns = ['date','predicted_value','real_value','model_number','death_or_confirmed','location_level','country_number','state_number','county_number','forecast_horizon_number'])
+    
     for r in range(1,10+1):
         temp = pd.read_csv(address + "site_file_weekly_Iran r = "+str(r)+".csv")
         
-        if first_run==1 and r==1:
+        if r==1:
             data = data.append(temp)
         else:
             data = data.append(temp.tail(1))
@@ -843,7 +841,7 @@ def create_base_output(first_run):
     data = data.drop_duplicates(subset = ['date'],keep='last')
             
     data['forecast_horizon_number'] = 0
-    data.to_csv(address + 'site_file_weekly_Iran.csv',index = False)
+    data.to_csv(address + 'site_file_weekly_Iran2.csv',index = False)
     
 ########################################################## Reading predicted value of each test_point
 

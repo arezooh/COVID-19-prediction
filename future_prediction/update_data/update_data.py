@@ -117,26 +117,26 @@ if __name__ == "__main__":
     # mediumObject = medium.mediumClass()
     # mediumObject.downloadHandler.get_airlines()
     
-    # get confirmed cases data
-    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv',\
-        csv_address+'covid_confirmed_cases.csv')
-    # get deaths data
-    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv',\
-            csv_address+'covid_deaths.csv')
-##    # get tests data
-##    get_csv('https://covidtracking.com/api/v1/states/daily.csv',\
-##            csv_address+'new-daily-state-test.csv')
-    # get region google mobility data
-    get_zip('https://www.gstatic.com/covid19/mobility/Region_Mobility_Report_CSVs.zip',\
-            csv_address+'Region_Mobility_Report_CSVs.zip')
-    # get global google mobility data
-    get_csv('https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv',csv_address+'Global_Mobility_Report.csv')
-
-    # get international confirmed cases and death data
-    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-    ,csv_address + 'international-covid-death-data.csv')
-    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
-    ,csv_address + 'international-covid-confirmed-data.csv')
+##    # get confirmed cases data
+##    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv',\
+##        csv_address+'covid_confirmed_cases.csv')
+##    # get deaths data
+##    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv',\
+##            csv_address+'covid_deaths.csv')
+####    # get tests data
+####    get_csv('https://covidtracking.com/api/v1/states/daily.csv',\
+####            csv_address+'new-daily-state-test.csv')
+##    # get region google mobility data
+##    get_zip('https://www.gstatic.com/covid19/mobility/Region_Mobility_Report_CSVs.zip',\
+##            csv_address+'Region_Mobility_Report_CSVs.zip')
+##    # get global google mobility data
+##    get_csv('https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv',csv_address+'Global_Mobility_Report.csv')
+##
+##    # get international confirmed cases and death data
+##    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+##    ,csv_address + 'international-covid-death-data.csv')
+##    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
+##    ,csv_address + 'international-covid-confirmed-data.csv')
     ########################### add new weather to weather file
     if weather_flag :
         new_weather=pd.read_csv(csv_address+'new-weather.csv')
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     google_mobility_data = pd.read_csv(US_file)    
 
     # max date recorded
-    confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%m/%d/%y') for x in cof.columns[4:]]).date()
+    confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%Y-%m-%d') for x in cof.columns[4:]]).date()
 
 #     # preprocess socialDistancing
 #     socialDistancing=socialDistancing[['countyFips', 'date',
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     data=pd.DataFrame(columns=['county_fips','date'])
     data['county_fips']=fips['fips']
     data['date']=valid_dates*3142 
-    data['date']=data['date'].apply(lambda x: datetime.datetime.strptime(x,'%m/%d/%y'))
+    data['date']=data['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
     data.sort_values(by=['county_fips','date'],inplace=True)
 
 #     ################################################################### add socialDistancing data
@@ -312,11 +312,11 @@ if __name__ == "__main__":
     data=data.drop_duplicates(subset=['county_fips','date'])
 
     for i in cof.columns[4:cof.shape[1]]:
-        j=datetime.datetime.strptime(i,'%m/%d/%y')
+        j=datetime.datetime.strptime(i,'%Y-%m-%d')
         data.loc[data['date']==j,'confirmed']=cof[i].copy().tolist()
 
     for i in det.columns[4:cof.shape[1]]:
-        j=datetime.datetime.strptime(i,'%m/%d/%y')
+        j=datetime.datetime.strptime(i,'%Y-%m-%d')
         data.loc[data['date']==j,'death']=det[i].copy().tolist()
 
     # save unimputed data
@@ -360,11 +360,11 @@ if __name__ == "__main__":
     # add imputed values to data
 
     for i in cof.columns[4:cof.shape[1]]:
-        j=datetime.datetime.strptime(i,'%m/%d/%y')
+        j=datetime.datetime.strptime(i,'%Y-%m-%d')
         data.loc[data['date']==j,'confirmed']=cof[i].copy().tolist()
 
     for i in det.columns[4:cof.shape[1]]:
-        j=datetime.datetime.strptime(i,'%m/%d/%y')
+        j=datetime.datetime.strptime(i,'%Y-%m-%d')
         data.loc[data['date']==j,'death']=det[i].copy().tolist()
 
     ########################################################################## add virus pressure to data
