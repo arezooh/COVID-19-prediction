@@ -1,1 +1,1 @@
-# COVID-19-prediction
+# Time series prediction package
