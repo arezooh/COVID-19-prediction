@@ -455,6 +455,8 @@ if __name__ == "__main__":
 
         for i in data['date'].unique():
             temp[i]=data.loc[data['date']==i,covar].tolist()
+        if covar in social_distancing_grades: # data is not recorded in this day
+            temp.loc[pd.isna(temp['21/01/12']),'21/01/12']=1
 
         X = np.array(temp)
         imputer = KNNImputer(n_neighbors=5)

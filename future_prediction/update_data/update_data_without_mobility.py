@@ -9,6 +9,7 @@ from sklearn.impute import KNNImputer
 import datetime
 import os
 from zipfile import ZipFile
+import shutil
 from sys import argv
 
 # self imports
@@ -42,6 +43,10 @@ def get_zip(url, save_path, chunk_size=128):
     with open(save_path, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
+            
+def make_zip(address):
+    shutil.copy(address+'weather.csv', './')          
+    shutil.make_archive('weather', 'zip', './weather.csv')
 
 if __name__ == "__main__":
     
@@ -62,11 +67,11 @@ if __name__ == "__main__":
     # jsonHandler.transform_jsonToCsv_socialDistancingData( + 'sd-state01.json',  + 'socialDistancing-s01.csv')
     # jsonHandler.transform_jsonToCsv_socialDistancingData('sd-state02.json',  + 'socialDistancing-s02.csv')
     
-#     # get Social Distancing data
-#     if first_run:
+    # get Social Distancing data
+    if first_run:
         
-#         mediumObject = medium.mediumClass()
-#         mediumObject.generate_allSocialDistancingData()
+        mediumObject = medium.mediumClass()
+        mediumObject.generate_allSocialDistancingData()
 
     # jsonHandler.transform_jsonToCsv_confirmAndDeathData('confirmAndDeath.json', 'temp-confirmAndDeath.csv')
     # downloadHandler.get_allStations('stations.csv')
@@ -155,28 +160,28 @@ if __name__ == "__main__":
     ########################################################################## concat and prepare data
     
     fix=pd.read_csv(csv_address+'fixed-data.csv')
-#     socialDistancing=pd.read_csv(csv_address+'socialDistancing.csv')
+    socialDistancing=pd.read_csv(csv_address+'socialDistancing.csv')
     cof=pd.read_csv(csv_address+'covid_confirmed_cases.csv')
     
-    zipFileName = csv_address+'Region_Mobility_Report_CSVs.zip'
-    US_address = '2020_US_Region_Mobility_Report.csv'
-    with ZipFile(zipFileName, 'r') as zip:
-        US_file = zip.extract(US_address)
-    google_mobility_data = pd.read_csv(US_file)    
+#     zipFileName = csv_address+'Region_Mobility_Report_CSVs.zip'
+#     US_address = '2020_US_Region_Mobility_Report.csv'
+#     with ZipFile(zipFileName, 'r') as zip:
+#         US_file = zip.extract(US_address)
+#     google_mobility_data = pd.read_csv(US_file)    
 
     # max date recorded
     confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%Y-%m-%d') for x in cof.columns[4:]]).date()
 
-#     # preprocess socialDistancing
-#     socialDistancing=socialDistancing[['countyFips', 'date',
-#            'totalGrade', 'visitationGrade', 'encountersGrade',
-#            'travelDistanceGrade']]
-#     socialDistancing=socialDistancing.rename(columns={'countyFips':'county_fips'})
-#     socialDistancing['county_fips']=socialDistancing['county_fips'].apply(lambda x:x[2:7]).astype(int)
-#     socialDistancing['date']=socialDistancing['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
+    # preprocess socialDistancing
+    socialDistancing=socialDistancing[['countyFips', 'date',
+           'totalGrade', 'visitationGrade', 'encountersGrade',
+           'travelDistanceGrade']]
+    socialDistancing=socialDistancing.rename(columns={'countyFips':'county_fips'})
+    socialDistancing['county_fips']=socialDistancing['county_fips'].apply(lambda x:x[2:7]).astype(int)
+    socialDistancing['date']=socialDistancing['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
 
-#     # max date recorded
-#     socialDistancing_max_date = max(socialDistancing['date']).date()
+    # max date recorded
+    socialDistancing_max_date = max(socialDistancing['date']).date()
     
     
     # find dates which confirmed cases and deaths are recorded
@@ -193,35 +198,35 @@ if __name__ == "__main__":
     data['date']=data['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
     data.sort_values(by=['county_fips','date'],inplace=True)
 
-#     ################################################################### add socialDistancing data
+    ################################################################### add socialDistancing data
 
-#     data=pd.merge(data,socialDistancing,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
-#     data=data.rename(columns={'totalGrade':'social-distancing-total-grade','visitationGrade':'social-distancing-visitation-grade',
-#                 'encountersGrade':'social-distancing-encounters-grade','travelDistanceGrade':'social-distancing-travel-distance-grade'})
+    data=pd.merge(data,socialDistancing,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
+    data=data.rename(columns={'totalGrade':'social-distancing-total-grade','visitationGrade':'social-distancing-visitation-grade',
+                'encountersGrade':'social-distancing-encounters-grade','travelDistanceGrade':'social-distancing-travel-distance-grade'})
 
-#     data['social-distancing-total-grade']=data['social-distancing-total-grade'].replace(['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']\
-#                                                                                         ,[12,11,10,9,8,7,6,5,4,3,2,1])
+    data['social-distancing-total-grade']=data['social-distancing-total-grade'].replace(['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']\
+                                                                                        ,[12,11,10,9,8,7,6,5,4,3,2,1])
 
-#     for i in ['social-distancing-visitation-grade','social-distancing-encounters-grade',\
-#               'social-distancing-travel-distance-grade']:
-#         data[i]=data[i].replace(['A','B','C','D','F'],[5,4,3,2,1])
+    for i in ['social-distancing-visitation-grade','social-distancing-encounters-grade',\
+              'social-distancing-travel-distance-grade']:
+        data[i]=data[i].replace(['A','B','C','D','F'],[5,4,3,2,1])
         
-    ################################################################## add google-mobility data
+#     ################################################################## add google-mobility data
     
-    # preprocess google mobility
-    google_mobility_data = google_mobility_data[~pd.isnull(google_mobility_data['census_fips_code'])]
-    google_mobility_data = google_mobility_data.rename(columns={
-           'census_fips_code':'county_fips', 'retail_and_recreation_percent_change_from_baseline':'Retail',
-           'grocery_and_pharmacy_percent_change_from_baseline':'Grocery',
-           'parks_percent_change_from_baseline': 'Parks',
-           'transit_stations_percent_change_from_baseline':'Transit',
-           'workplaces_percent_change_from_baseline':'Workplace',
-           'residential_percent_change_from_baseline':'Residential'})
-    google_mobility_data = google_mobility_data[['county_fips', 'date', 'Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']]
-    google_mobility_data['date'] = google_mobility_data['date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
+#     # preprocess google mobility
+#     google_mobility_data = google_mobility_data[~pd.isnull(google_mobility_data['census_fips_code'])]
+#     google_mobility_data = google_mobility_data.rename(columns={
+#            'census_fips_code':'county_fips', 'retail_and_recreation_percent_change_from_baseline':'Retail',
+#            'grocery_and_pharmacy_percent_change_from_baseline':'Grocery',
+#            'parks_percent_change_from_baseline': 'Parks',
+#            'transit_stations_percent_change_from_baseline':'Transit',
+#            'workplaces_percent_change_from_baseline':'Workplace',
+#            'residential_percent_change_from_baseline':'Residential'})
+#     google_mobility_data = google_mobility_data[['county_fips', 'date', 'Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']]
+#     google_mobility_data['date'] = google_mobility_data['date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
     
-    data=pd.merge(data,google_mobility_data,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
-    google_mobility_max_date = max(google_mobility_data['date']).date()
+#     data=pd.merge(data,google_mobility_data,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
+#     google_mobility_max_date = max(google_mobility_data['date']).date()
     
 
     ################################################################## add week-day
@@ -393,13 +398,13 @@ if __name__ == "__main__":
 
     data=data.drop(['neighbur_count'],axis=1)
 
-    unimputed_data['virus-pressure']=data['virus-pressure']#####**************************************######
+    unimputed_data['virus-pressure']=data['virus-pressure']
 
     ###################################################################### 
     # find max date with all features recorded and save unimputed data
 
-    max_date = min(#socialDistancing_max_date,
-                   confirmed_and_death_max_date,test_max_date,google_mobility_max_date)
+    max_date = min(socialDistancing_max_date,confirmed_and_death_max_date,test_max_date#,google_mobility_max_date
+                  )
     
     if weather_flag:
         max_date = min(weather_max_date, max_date)
@@ -417,9 +422,10 @@ if __name__ == "__main__":
 
     #data['date']=data['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
 
-    covariate_to_imputed = [#'social-distancing-total-grade','social-distancing-visitation-grade',
-                            #'social-distancing-encounters-grade','social-distancing-travel-distance-grade',
-                            'Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
+    covariate_to_imputed = ['social-distancing-total-grade','social-distancing-visitation-grade',
+                            'social-distancing-encounters-grade','social-distancing-travel-distance-grade',
+                            #'Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential'
+                           ]
     if weather_flag:
         covariate_to_imputed = covariate_to_imputed + ['precipitation','temperature']
 
@@ -430,17 +436,17 @@ if __name__ == "__main__":
         counties_with_all_null_ind[i]=temp[temp[i]==0].index.tolist()
 
 
-#     # impute first days social distancing with lowest value    
-#     social_distancing_grades = ['social-distancing-total-grade','social-distancing-visitation-grade',
-#                                 'social-distancing-encounters-grade','social-distancing-travel-distance-grade']
+    # impute first days social distancing with lowest value    
+    social_distancing_grades = ['social-distancing-total-grade','social-distancing-visitation-grade',
+                                'social-distancing-encounters-grade','social-distancing-travel-distance-grade']
 
-#     for social_distancing_grade in social_distancing_grades:
-#         data.loc[(data['date']<datetime.datetime(2020,2,24)),social_distancing_grade]=1 # we have no social distancing data before 2020,2,24
+    for social_distancing_grade in social_distancing_grades:
+        data.loc[(data['date']<datetime.datetime(2020,2,24)),social_distancing_grade]=1 # we have no social distancing data before 2020,2,24
 
-    google_mobility_features = ['Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
+#     google_mobility_features = ['Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
     
-    for feature in google_mobility_features:
-        data.loc[(data['date']<datetime.datetime(2020,2,15)),feature]=0
+#     for feature in google_mobility_features:
+#         data.loc[(data['date']<datetime.datetime(2020,2,15)),feature]=0
         
     
     data['date']=data['date'].apply(lambda x: x.strftime('%y/%m/%d'))
@@ -456,11 +462,13 @@ if __name__ == "__main__":
 
         for i in data['date'].unique():
             temp[i]=data.loc[data['date']==i,covar].tolist()
+        temp.loc[pd.isna(temp['21/01/12']),'21/01/12']=1
 
         X = np.array(temp)
         imputer = KNNImputer(n_neighbors=5)
         imp=imputer.fit_transform(X)
         imp=pd.DataFrame(imp)
+        imp.to_csv('imp.csv')
         imp.columns=temp.columns
         imp.index=temp.index
         for i in data['date'].unique():
@@ -470,8 +478,8 @@ if __name__ == "__main__":
         data.loc[data['county_fips'].isin(counties_with_all_null_ind[covar]),covar]=np.NaN
 
     # remove features with high volume of missing from imputed data 
-    data=data.drop([#'social-distancing-visitation-grade', 
-                        'Parks', 'Transit', 'Residential'],axis=1)
+    data=data.drop(['social-distancing-visitation-grade'#, 'Parks', 'Transit', 'Residential'
+                   ],axis=1)
 
     # impute state daily test
 
@@ -516,10 +524,10 @@ if __name__ == "__main__":
         data=data[~data['county_fips'].isin(nullind)]
         fix=fix[~fix['county_fips'].isin(nullind)]
 
-    timeDeapandant_features_with_nulls=[#'social-distancing-travel-distance-grade','social-distancing-total-grade',
-                                        #'social-distancing-encounters-grade', 
-                                        'Retail', 'Grocery',
-                                        'Workplace']
+    timeDeapandant_features_with_nulls=['social-distancing-travel-distance-grade','social-distancing-total-grade',
+                                        'social-distancing-encounters-grade', 
+                                        # 'Retail', 'Grocery','Workplace'
+                                       ]
     if weather_flag:
         timeDeapandant_features_with_nulls=timeDeapandant_features_with_nulls+['temperature','precipitation']
 
@@ -535,3 +543,5 @@ if __name__ == "__main__":
     data.to_csv(save_address+'full-temporal-data.csv', index=False)
 
     fix[['county_fips']].to_csv(save_address+'full-data-county-fips.csv',index=False)
+    
+    make_zip(csv_address)
