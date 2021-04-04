@@ -159,10 +159,14 @@ if __name__ == "__main__":
     cof=pd.read_csv(csv_address+'covid_confirmed_cases.csv')
     
     zipFileName = csv_address+'Region_Mobility_Report_CSVs.zip'
-    US_address = '2020_US_Region_Mobility_Report.csv'
     with ZipFile(zipFileName, 'r') as zip:
-        US_file = zip.extract(US_address)
-    google_mobility_data = pd.read_csv(US_file)    
+        US_file_2020 = zip.extract('2020_US_Region_Mobility_Report.csv')
+        US_file_2021 = zip.extract('2021_US_Region_Mobility_Report.csv')
+    google_mobility_data_2020 = pd.read_csv(US_file_2020)
+    google_mobility_data_2021 = pd.read_csv(US_file_2021)
+    
+    google_mobility_data = google_mobility_data_2020.append(google_mobility_data_2021)
+
 
     # max date recorded
     confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%m/%d/%y') for x in cof.columns[4:]]).date()
