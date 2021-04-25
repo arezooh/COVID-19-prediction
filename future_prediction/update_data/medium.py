@@ -95,6 +95,7 @@ class mediumClass:
 ##                self.downloadHandler.get_countyWeatherData(countyFips, stationID, startDate, endDate, 'new-weather.csv')
 ##            # Other steps, merge new data to weather.csv file
 ##            else:
+
             self.downloadHandler.get_countyWeatherData(countyFips, stationID, startDate, endDate, 'temp.csv')
             self.csvHandler.merge_csvFiles_addRows('new-weather.csv', 'temp.csv', 'new-weather.csv')
 

@@ -19,10 +19,10 @@ import medium
 
 csv_address = './csvFiles/'
 
-first_run = 1
-weather_flag = 1 # decide for downloading weather data or not
+first_run = 1 if str(argv[1]) == 'f' else 0
+weather_flag = int(argv[2]) # decide for downloading weather data or not
 
-save_address = csv_address + 'all_features_data/'
+save_address = csv_address
 if weather_flag == 0:
     save_address = csv_address + 'weatherless/'
 if not os.path.exists(save_address):
@@ -45,12 +45,12 @@ def get_zip(url, save_path, chunk_size=128):
 
 if __name__ == "__main__":
     
-#     if weather_flag:
+    if weather_flag:
         
-#         if os.path.exists("./weather.log"):
-#             os.remove("./weather.log")
-#         else:
-#             print("The file does not exist")
+        if os.path.exists("./weather.log"):
+            os.remove("./weather.log")
+        else:
+            print("The file does not exist")
         
     # downloadHandler.get_socialDistancingData(2, 'sd-state%02d.json' % (2))
     # downloadHandler.get_confirmAndDeathData( + 'confirmAndDeath.json')
@@ -62,11 +62,11 @@ if __name__ == "__main__":
     # jsonHandler.transform_jsonToCsv_socialDistancingData( + 'sd-state01.json',  + 'socialDistancing-s01.csv')
     # jsonHandler.transform_jsonToCsv_socialDistancingData('sd-state02.json',  + 'socialDistancing-s02.csv')
     
-    # get Social Distancing data
-    if first_run:
+#     # get Social Distancing data
+#     if first_run:
         
-        mediumObject = medium.mediumClass()
-        mediumObject.generate_allSocialDistancingData()
+#         mediumObject = medium.mediumClass()
+#         mediumObject.generate_allSocialDistancingData()
 
     # jsonHandler.transform_jsonToCsv_confirmAndDeathData('confirmAndDeath.json', 'temp-confirmAndDeath.csv')
     # downloadHandler.get_allStations('stations.csv')
@@ -84,81 +84,82 @@ if __name__ == "__main__":
     # mediumObject.csvHandler.merge_csvFiles_addColumns('confirmAndDeath.csv', 'socialDistancing.csv', 'temporal-data.csv', ['countyFIPS', 'date'], ['countyFips', 'date'], ['totalGrade', 'visitationGrade', 'encountersGrade', 'travelDistanceGrade'])
     #       |--|
     
-#     if weather_flag :
-#         weather=pd.read_csv(csv_address+'weather.csv')
-#         weather=weather.dropna(subset=['DATE'])
-#         weather['DATE']=weather['DATE'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
-#         startdate = datetime.datetime.strftime(max(weather['DATE'] - datetime.timedelta(days=10)) ,'%Y-%m-%d')
-#         print('weather start date: ',startdate)
-#         today = datetime.datetime.now()
-#         enddate = datetime.datetime.strftime(today ,'%Y-%m-%d')
-#         print('weather end date: ',enddate)
-#         stations = pd.read_csv(csv_address+'stations.csv')
-#         print ('stations.shape',stations.shape)
+    if weather_flag :
+        weather=pd.read_csv(csv_address+'weather.csv')
+        weather=weather.dropna(subset=['DATE'])
+        weather['DATE']=weather['DATE'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
+        startdate = datetime.datetime.strftime(max(weather['DATE'] - datetime.timedelta(days=10)) ,'%Y-%m-%d')
+        print('weather start date: ',startdate)
+        today = datetime.datetime.now()
+        enddate = datetime.datetime.strftime(today ,'%Y-%m-%d')
+        print('weather end date: ',enddate)
+        stations = pd.read_csv(csv_address+'stations.csv')
+        print ('stations.shape',stations.shape)
 
-#         if first_run:
-#             new_weather = pd.DataFrame(columns=weather.columns)
-#             new_weather.to_csv(csv_address+'new-weather.csv',index=False)
-#             stations.to_csv(csv_address+'temp-stations.csv')
-#         else:
-#             weather=pd.read_csv(csv_address+'new-weather.csv')
-#             stations2=stations.copy()
-#             stations2['id']=stations2['id'].apply(lambda x: x[6:])
-#             ind=stations2[~(stations2['county_fips'].isin(weather['county_fips'].unique()[:-1]))].index
-#             stations=stations.iloc[ind,:]
-#             stations.to_csv(csv_address+'temp-stations.csv', index=False)
+        if first_run:
+            new_weather = pd.DataFrame(columns=weather.columns)
+            new_weather.to_csv(csv_address+'new-weather.csv',index=False)
+            stations.to_csv(csv_address+'temp-stations.csv')
+        else:
+            weather=pd.read_csv(csv_address+'new-weather.csv')
+            stations2=stations.copy()
+            stations2['id']=stations2['id'].apply(lambda x: x[6:])
+            ind=stations2[~(stations2['county_fips'].isin(weather['county_fips'].unique()[:-1]))].index
+            stations=stations.iloc[ind,:]
+            stations.to_csv(csv_address+'temp-stations.csv', index=False)
 
-#         # get weather data
+        # get weather data
 
-#         mediumObject = medium.mediumClass()
-#         mediumObject.downloadHandler.get_countyWeatherData('1001', 'USW00093228', startdate, enddate, 'test.csv')
-#         mediumObject.generate_allWeatherData(startdate, enddate)
+        mediumObject = medium.mediumClass()
+        mediumObject.downloadHandler.get_countyWeatherData('1001', 'USW00093228', startdate, enddate, 'test.csv')
+        mediumObject.generate_allWeatherData(startdate, enddate)
 
     # mediumObject = medium.mediumClass()
     # mediumObject.downloadHandler.get_airlines()
     
-#     # get confirmed cases data
-#     get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv',\
-#         csv_address+'covid_confirmed_cases.csv')
-#     # get deaths data
-#     get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv',\
-#             csv_address+'covid_deaths.csv')
-#     # get tests data
-#     get_csv('https://covidtracking.com/api/v1/states/daily.csv',\
-#             csv_address+'new-daily-state-test.csv')
-#     # get region google mobility data
-#     get_zip('https://www.gstatic.com/covid19/mobility/Region_Mobility_Report_CSVs.zip',\
-#             csv_address+'Region_Mobility_Report_CSVs.zip')
-#     # get global google mobility data
-#     get_csv('https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv',csv_address+'Global_Mobility_Report.csv')
+    # get confirmed cases data
+    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv',\
+        csv_address+'covid_confirmed_cases.csv')
+    # get deaths data
+    get_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv',\
+            csv_address+'covid_deaths.csv')
+##    # get tests data
+##    get_csv('https://covidtracking.com/api/v1/states/daily.csv',\
+##            csv_address+'new-daily-state-test.csv')
+    # get region google mobility data
+    get_zip('https://www.gstatic.com/covid19/mobility/Region_Mobility_Report_CSVs.zip',\
+            csv_address+'Region_Mobility_Report_CSVs.zip')
+    # get global google mobility data
+    get_csv('https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv',csv_address+'Global_Mobility_Report.csv')
 
-#     # get international confirmed cases and death data
-#     get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-#     ,csv_address + 'international-covid-death-data.csv')
-#     get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
-#     ,csv_address + 'international-covid-confirmed-data.csv')
+    # get international confirmed cases and death data
+    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+    ,csv_address + 'international-covid-death-data.csv')
+    get_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
+    ,csv_address + 'international-covid-confirmed-data.csv')
     ########################### add new weather to weather file
-#     if weather_flag :
-#         new_weather=pd.read_csv(csv_address+'new-weather.csv')
-#         weather=pd.read_csv(csv_address+'weather.csv')
-#         weather=weather.append(new_weather)
-#         weather=weather.drop_duplicates(subset=['county_fips','STATION','DATE'])
-#         weather.to_csv(csv_address+'weather.csv', index=False)
+    if weather_flag :
+        new_weather=pd.read_csv(csv_address+'new-weather.csv')
+        weather=pd.read_csv(csv_address+'weather.csv')
+        weather=weather.append(new_weather)
+        weather=weather.drop_duplicates(subset=['county_fips','STATION','DATE'])
+        weather.to_csv(csv_address+'weather.csv', index=False)
     
-#     ########################### add new tests to test file
-#     new_tests=pd.read_csv(csv_address+'new-daily-state-test.csv')
-#     tests=pd.read_csv(csv_address+'daily-state-test.csv')
-#     tests=tests.append(new_tests)
-#     tests=tests.drop_duplicates(subset=['date','state'])
-#     tests.to_csv(csv_address+'daily-state-test.csv', index=False)
+    ########################### add new tests to test file
+    new_tests=pd.read_csv(csv_address+'new-daily-state-test.csv')
+    tests=pd.read_csv(csv_address+'daily-state-test.csv')
+    tests=tests.append(new_tests)
+    tests=tests.drop_duplicates(subset=['date','state'])
+    tests.to_csv(csv_address+'daily-state-test.csv', index=False)
     
     ########################################################################## concat and prepare data
     
     fix=pd.read_csv(csv_address+'fixed-data.csv')
-    socialDistancing=pd.read_csv(csv_address+'socialDistancing.csv')
+#     socialDistancing=pd.read_csv(csv_address+'socialDistancing.csv')
     cof=pd.read_csv(csv_address+'covid_confirmed_cases.csv')
     
     zipFileName = csv_address+'Region_Mobility_Report_CSVs.zip'
+
     with ZipFile(zipFileName, 'r') as zip:
         US_file_2020 = zip.extract('2020_US_Region_Mobility_Report.csv')
         US_file_2021 = zip.extract('2021_US_Region_Mobility_Report.csv')
@@ -167,20 +168,19 @@ if __name__ == "__main__":
     
     google_mobility_data = google_mobility_data_2020.append(google_mobility_data_2021)
 
-
     # max date recorded
     confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%Y-%m-%d') for x in cof.columns[4:]]).date()
 
-    # preprocess socialDistancing
-    socialDistancing=socialDistancing[['countyFips', 'date',
-           'totalGrade', 'visitationGrade', 'encountersGrade',
-           'travelDistanceGrade']]
-    socialDistancing=socialDistancing.rename(columns={'countyFips':'county_fips'})
-    socialDistancing['county_fips']=socialDistancing['county_fips'].apply(lambda x:x[2:7]).astype(int)
-    socialDistancing['date']=socialDistancing['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
+#     # preprocess socialDistancing
+#     socialDistancing=socialDistancing[['countyFips', 'date',
+#            'totalGrade', 'visitationGrade', 'encountersGrade',
+#            'travelDistanceGrade']]
+#     socialDistancing=socialDistancing.rename(columns={'countyFips':'county_fips'})
+#     socialDistancing['county_fips']=socialDistancing['county_fips'].apply(lambda x:x[2:7]).astype(int)
+#     socialDistancing['date']=socialDistancing['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
 
-    # max date recorded
-    socialDistancing_max_date = max(socialDistancing['date']).date()
+#     # max date recorded
+#     socialDistancing_max_date = max(socialDistancing['date']).date()
     
     
     # find dates which confirmed cases and deaths are recorded
@@ -197,18 +197,18 @@ if __name__ == "__main__":
     data['date']=data['date'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d'))
     data.sort_values(by=['county_fips','date'],inplace=True)
 
-    ################################################################### add socialDistancing data
+#     ################################################################### add socialDistancing data
 
-    data=pd.merge(data,socialDistancing,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
-    data=data.rename(columns={'totalGrade':'social-distancing-total-grade','visitationGrade':'social-distancing-visitation-grade',
-                'encountersGrade':'social-distancing-encounters-grade','travelDistanceGrade':'social-distancing-travel-distance-grade'})
+#     data=pd.merge(data,socialDistancing,how='left',left_on=['county_fips','date'],right_on=['county_fips','date'])
+#     data=data.rename(columns={'totalGrade':'social-distancing-total-grade','visitationGrade':'social-distancing-visitation-grade',
+#                 'encountersGrade':'social-distancing-encounters-grade','travelDistanceGrade':'social-distancing-travel-distance-grade'})
 
-    data['social-distancing-total-grade']=data['social-distancing-total-grade'].replace(['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']\
-                                                                                        ,[12,11,10,9,8,7,6,5,4,3,2,1])
+#     data['social-distancing-total-grade']=data['social-distancing-total-grade'].replace(['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']\
+#                                                                                         ,[12,11,10,9,8,7,6,5,4,3,2,1])
 
-    for i in ['social-distancing-visitation-grade','social-distancing-encounters-grade',\
-              'social-distancing-travel-distance-grade']:
-        data[i]=data[i].replace(['A','B','C','D','F'],[5,4,3,2,1])
+#     for i in ['social-distancing-visitation-grade','social-distancing-encounters-grade',\
+#               'social-distancing-travel-distance-grade']:
+#         data[i]=data[i].replace(['A','B','C','D','F'],[5,4,3,2,1])
         
     ################################################################## add google-mobility data
     
@@ -236,26 +236,26 @@ if __name__ == "__main__":
 
     data.rename(columns={'week-day':'weekend'},inplace=True)
 
-#     ################################################################ add test
+    ################################################################ add test
 
-#     dailytest = pd.read_csv(csv_address+'daily-state-test.csv')
-#     dailytest['date']=dailytest['date'].astype(str).apply(lambda x:datetime.datetime.strptime(x,'%Y%m%d'))
-#     dailytest=dailytest[['date','fips','totalTestResultsIncrease']]
+    dailytest = pd.read_csv(csv_address+'daily-state-test.csv')
+    dailytest['date']=dailytest['date'].astype(str).apply(lambda x:datetime.datetime.strptime(x,'%Y%m%d'))
+    dailytest=dailytest[['date','fips','totalTestResultsIncrease']]
 
-#     test_max_date = max(dailytest['date']).date()
+    test_max_date = max(dailytest['date']).date()
 
-#     data['fips']=data['county_fips']//1000
-#     data=pd.merge(data,dailytest,how='left',left_on=['date','fips'],right_on=['date','fips'])
+    data['fips']=data['county_fips']//1000
+    data=pd.merge(data,dailytest,how='left',left_on=['date','fips'],right_on=['date','fips'])
 
-#     state_pop=fix[['state_fips','total_population']].groupby(['state_fips']).sum()
-#     state_pop=state_pop.reset_index()
+    state_pop=fix[['state_fips','total_population']].groupby(['state_fips']).sum()
+    state_pop=state_pop.reset_index()
 
-#     data=pd.merge(data,state_pop,how='left',left_on=['fips'],right_on=['state_fips'])
+    data=pd.merge(data,state_pop,how='left',left_on=['fips'],right_on=['state_fips'])
 
-#     data['totalTestResultsIncrease']=data['totalTestResultsIncrease']/data['total_population']
+    data['totalTestResultsIncrease']=data['totalTestResultsIncrease']/data['total_population']
 
-#     data.drop(['fips','state_fips','total_population'],axis=1,inplace=True)
-#     data.rename(columns={'totalTestResultsIncrease':'daily-state-test'},inplace=True)
+    data.drop(['fips','state_fips','total_population'],axis=1,inplace=True)
+    data.rename(columns={'totalTestResultsIncrease':'daily-state-test'},inplace=True)
 
     ############################################################## add weather data
 
@@ -402,8 +402,8 @@ if __name__ == "__main__":
     ###################################################################### 
     # find max date with all features recorded and save unimputed data
 
-    max_date = min(socialDistancing_max_date,confirmed_and_death_max_date,#test_max_date,
-                   google_mobility_max_date)
+    max_date = min(#socialDistancing_max_date,
+                   confirmed_and_death_max_date,test_max_date,google_mobility_max_date)
     
     if weather_flag:
         max_date = min(weather_max_date, max_date)
@@ -421,8 +421,8 @@ if __name__ == "__main__":
 
     #data['date']=data['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
 
-    covariate_to_imputed = ['social-distancing-total-grade','social-distancing-visitation-grade',
-                            'social-distancing-encounters-grade','social-distancing-travel-distance-grade',
+    covariate_to_imputed = [#'social-distancing-total-grade','social-distancing-visitation-grade',
+                            #'social-distancing-encounters-grade','social-distancing-travel-distance-grade',
                             'Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
     if weather_flag:
         covariate_to_imputed = covariate_to_imputed + ['precipitation','temperature']
@@ -434,12 +434,12 @@ if __name__ == "__main__":
         counties_with_all_null_ind[i]=temp[temp[i]==0].index.tolist()
 
 
-    # impute first days social distancing with lowest value    
-    social_distancing_grades = ['social-distancing-total-grade','social-distancing-visitation-grade',
-                                'social-distancing-encounters-grade','social-distancing-travel-distance-grade']
+#     # impute first days social distancing with lowest value    
+#     social_distancing_grades = ['social-distancing-total-grade','social-distancing-visitation-grade',
+#                                 'social-distancing-encounters-grade','social-distancing-travel-distance-grade']
 
-    for social_distancing_grade in social_distancing_grades:
-        data.loc[(data['date']<datetime.datetime(2020,2,24)),social_distancing_grade]=1 # we have no social distancing data before 2020,2,24
+#     for social_distancing_grade in social_distancing_grades:
+#         data.loc[(data['date']<datetime.datetime(2020,2,24)),social_distancing_grade]=1 # we have no social distancing data before 2020,2,24
 
     google_mobility_features = ['Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
     
@@ -460,8 +460,6 @@ if __name__ == "__main__":
 
         for i in data['date'].unique():
             temp[i]=data.loc[data['date']==i,covar].tolist()
-        if covar in social_distancing_grades: # data is not recorded in this day
-            temp.loc[pd.isna(temp['21/01/12']),'21/01/12']=1
 
         X = np.array(temp)
         imputer = KNNImputer(n_neighbors=5)
@@ -476,33 +474,41 @@ if __name__ == "__main__":
         data.loc[data['county_fips'].isin(counties_with_all_null_ind[covar]),covar]=np.NaN
 
     # remove features with high volume of missing from imputed data 
-    data=data.drop(['social-distancing-visitation-grade', 'Parks', 'Transit', 'Residential'],axis=1)
+    data=data.drop([#'social-distancing-visitation-grade', 
+                        'Parks', 'Transit', 'Residential'],axis=1)
 
     # impute state daily test
 
-#     first_day_null = data.loc[pd.isnull(data['daily-state-test'])].index
+    first_day_null = data.loc[pd.isnull(data['daily-state-test'])].index
 
-#     data.loc[data['daily-state-test']<0,'daily-state-test']=np.NaN
-#     value_count=data.groupby('county_fips').count()
-#     counties_with_all_nulls=value_count[value_count['daily-state-test']==0]
-#     temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
+    data.loc[data['daily-state-test']<0,'daily-state-test']=np.NaN
+    value_count=data.groupby('county_fips').count()
+    counties_with_all_nulls=value_count[value_count['daily-state-test']==0]
+    temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
 
-#     for i in data['date'].unique():
-#         temp[i]=data.loc[data['date']==i,'daily-state-test'].tolist()
-#     X = np.array(temp)
-#     imputer = KNNImputer(n_neighbors=5)
-#     imp=imputer.fit_transform(X)
-#     imp=pd.DataFrame(imp)
-#     imp.columns=temp.columns
-#     imp.index=temp.index
-#     for i in data['date'].unique():
-#         data.loc[data['date']==i,'daily-state-test']=imp[i].tolist()
-#     if(len(counties_with_all_nulls)>0):
-#         data.loc[data['county_fips'].isin(counties_with_all_nulls.index),'daily-state-test']=np.NaN
+    for i in data['date'].unique():
+        temp[i]=data.loc[data['date']==i,'daily-state-test'].tolist()
+    X = np.array(temp)
+    imputer = KNNImputer(n_neighbors=5)
+    imp=imputer.fit_transform(X)
+    imp=pd.DataFrame(imp)
+    imp.columns=temp.columns
+    imp.index=temp.index
+    for i in data['date'].unique():
+        data.loc[data['date']==i,'daily-state-test']=imp[i].tolist()
+    if(len(counties_with_all_nulls)>0):
+        data.loc[data['county_fips'].isin(counties_with_all_nulls.index),'daily-state-test']=np.NaN
 
-    # save data for models
-    data=data.sort_values(by=['county_fips','date'])
-    data.to_csv(save_address+'temporal-data.csv',index=False)
+    #####**************************************######
+    data2=data.copy()
+    data2.loc[first_day_null,'daily-state-test']=np.NaN # return first days nulls
+    
+##    first_days_data = pd.read_csv(csv_address + 'first-days-temporal-data.csv')
+##    data2 = pd.concat([data2,first_days_data])
+##    data2 = data2.drop_duplicates(subset = ['county_fips','date'])
+##    # save data for models
+    data2 = data2.sort_values(by=['county_fips','date'])
+    data2.to_csv(save_address+'temporal-data.csv',index=False)
 
     #################################################### remove counties with all nulls for some features
 
@@ -514,8 +520,9 @@ if __name__ == "__main__":
         data=data[~data['county_fips'].isin(nullind)]
         fix=fix[~fix['county_fips'].isin(nullind)]
 
-    timeDeapandant_features_with_nulls=['social-distancing-travel-distance-grade','social-distancing-total-grade',
-                                        'social-distancing-encounters-grade', 'Retail', 'Grocery',
+    timeDeapandant_features_with_nulls=[#'social-distancing-travel-distance-grade','social-distancing-total-grade',
+                                        #'social-distancing-encounters-grade', 
+                                        'Retail', 'Grocery',
                                         'Workplace']
     if weather_flag:
         timeDeapandant_features_with_nulls=timeDeapandant_features_with_nulls+['temperature','precipitation']

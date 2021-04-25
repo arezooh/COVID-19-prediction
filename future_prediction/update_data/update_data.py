@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+﻿#!/usr/bin/python3
 import pandas as pd
 import numpy as np
 import requests
@@ -145,12 +145,12 @@ if __name__ == "__main__":
         weather=weather.drop_duplicates(subset=['county_fips','STATION','DATE'])
         weather.to_csv(csv_address+'weather.csv', index=False)
     
-    ########################### add new tests to test file
-    new_tests=pd.read_csv(csv_address+'new-daily-state-test.csv')
-    tests=pd.read_csv(csv_address+'daily-state-test.csv')
-    tests=tests.append(new_tests)
-    tests=tests.drop_duplicates(subset=['date','state'])
-    tests.to_csv(csv_address+'daily-state-test.csv', index=False)
+#     ########################### add new tests to test file
+#     new_tests=pd.read_csv(csv_address+'new-daily-state-test.csv')
+#     tests=pd.read_csv(csv_address+'daily-state-test.csv')
+#     tests=tests.append(new_tests)
+#     tests=tests.drop_duplicates(subset=['date','state'])
+#     tests.to_csv(csv_address+'daily-state-test.csv', index=False)
     
     ########################################################################## concat and prepare data
     
@@ -159,10 +159,14 @@ if __name__ == "__main__":
     cof=pd.read_csv(csv_address+'covid_confirmed_cases.csv')
     
     zipFileName = csv_address+'Region_Mobility_Report_CSVs.zip'
-    US_address = '2020_US_Region_Mobility_Report.csv'
+
     with ZipFile(zipFileName, 'r') as zip:
-        US_file = zip.extract(US_address)
-    google_mobility_data = pd.read_csv(US_file)    
+        US_file_2020 = zip.extract('2020_US_Region_Mobility_Report.csv')
+        US_file_2021 = zip.extract('2021_US_Region_Mobility_Report.csv')
+    google_mobility_data_2020 = pd.read_csv(US_file_2020)
+    google_mobility_data_2021 = pd.read_csv(US_file_2021)
+    
+    google_mobility_data = google_mobility_data_2020.append(google_mobility_data_2021)
 
     # max date recorded
     confirmed_and_death_max_date = max([datetime.datetime.strptime(x,'%Y-%m-%d') for x in cof.columns[4:]]).date()
@@ -232,26 +236,26 @@ if __name__ == "__main__":
 
     data.rename(columns={'week-day':'weekend'},inplace=True)
 
-    ################################################################ add test
+#     ################################################################ add test
 
-    dailytest = pd.read_csv(csv_address+'daily-state-test.csv')
-    dailytest['date']=dailytest['date'].astype(str).apply(lambda x:datetime.datetime.strptime(x,'%Y%m%d'))
-    dailytest=dailytest[['date','fips','totalTestResultsIncrease']]
+#     dailytest = pd.read_csv(csv_address+'daily-state-test.csv')
+#     dailytest['date']=dailytest['date'].astype(str).apply(lambda x:datetime.datetime.strptime(x,'%Y%m%d'))
+#     dailytest=dailytest[['date','fips','totalTestResultsIncrease']]
 
-    test_max_date = max(dailytest['date']).date()
+#     test_max_date = max(dailytest['date']).date()
 
-    data['fips']=data['county_fips']//1000
-    data=pd.merge(data,dailytest,how='left',left_on=['date','fips'],right_on=['date','fips'])
+#     data['fips']=data['county_fips']//1000
+#     data=pd.merge(data,dailytest,how='left',left_on=['date','fips'],right_on=['date','fips'])
 
-    state_pop=fix[['state_fips','total_population']].groupby(['state_fips']).sum()
-    state_pop=state_pop.reset_index()
+#     state_pop=fix[['state_fips','total_population']].groupby(['state_fips']).sum()
+#     state_pop=state_pop.reset_index()
 
-    data=pd.merge(data,state_pop,how='left',left_on=['fips'],right_on=['state_fips'])
+#     data=pd.merge(data,state_pop,how='left',left_on=['fips'],right_on=['state_fips'])
 
-    data['totalTestResultsIncrease']=data['totalTestResultsIncrease']/data['total_population']
+#     data['totalTestResultsIncrease']=data['totalTestResultsIncrease']/data['total_population']
 
-    data.drop(['fips','state_fips','total_population'],axis=1,inplace=True)
-    data.rename(columns={'totalTestResultsIncrease':'daily-state-test'},inplace=True)
+#     data.drop(['fips','state_fips','total_population'],axis=1,inplace=True)
+#     data.rename(columns={'totalTestResultsIncrease':'daily-state-test'},inplace=True)
 
     ############################################################## add weather data
 
@@ -399,7 +403,8 @@ if __name__ == "__main__":
     # find max date with all features recorded and save unimputed data
 
     max_date = min(#socialDistancing_max_date,
-                   confirmed_and_death_max_date,test_max_date,google_mobility_max_date)
+                   confirmed_and_death_max_date,#test_max_date,
+                   google_mobility_max_date)
     
     if weather_flag:
         max_date = min(weather_max_date, max_date)
@@ -473,31 +478,31 @@ if __name__ == "__main__":
     data=data.drop([#'social-distancing-visitation-grade', 
                         'Parks', 'Transit', 'Residential'],axis=1)
 
-    # impute state daily test
+#     # impute state daily test
 
-    first_day_null = data.loc[pd.isnull(data['daily-state-test'])].index
+#     first_day_null = data.loc[pd.isnull(data['daily-state-test'])].index
 
-    data.loc[data['daily-state-test']<0,'daily-state-test']=np.NaN
-    value_count=data.groupby('county_fips').count()
-    counties_with_all_nulls=value_count[value_count['daily-state-test']==0]
-    temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
+#     data.loc[data['daily-state-test']<0,'daily-state-test']=np.NaN
+#     value_count=data.groupby('county_fips').count()
+#     counties_with_all_nulls=value_count[value_count['daily-state-test']==0]
+#     temp=pd.DataFrame(index=data['county_fips'].unique().tolist(),columns=data['date'].unique().tolist())
 
-    for i in data['date'].unique():
-        temp[i]=data.loc[data['date']==i,'daily-state-test'].tolist()
-    X = np.array(temp)
-    imputer = KNNImputer(n_neighbors=5)
-    imp=imputer.fit_transform(X)
-    imp=pd.DataFrame(imp)
-    imp.columns=temp.columns
-    imp.index=temp.index
-    for i in data['date'].unique():
-        data.loc[data['date']==i,'daily-state-test']=imp[i].tolist()
-    if(len(counties_with_all_nulls)>0):
-        data.loc[data['county_fips'].isin(counties_with_all_nulls.index),'daily-state-test']=np.NaN
+#     for i in data['date'].unique():
+#         temp[i]=data.loc[data['date']==i,'daily-state-test'].tolist()
+#     X = np.array(temp)
+#     imputer = KNNImputer(n_neighbors=5)
+#     imp=imputer.fit_transform(X)
+#     imp=pd.DataFrame(imp)
+#     imp.columns=temp.columns
+#     imp.index=temp.index
+#     for i in data['date'].unique():
+#         data.loc[data['date']==i,'daily-state-test']=imp[i].tolist()
+#     if(len(counties_with_all_nulls)>0):
+#         data.loc[data['county_fips'].isin(counties_with_all_nulls.index),'daily-state-test']=np.NaN
 
     #####**************************************######
     data2=data.copy()
-    data2.loc[first_day_null,'daily-state-test']=np.NaN # return first days nulls
+#     data2.loc[first_day_null,'daily-state-test']=np.NaN # return first days nulls
     
 ##    first_days_data = pd.read_csv(csv_address + 'first-days-temporal-data.csv')
 ##    data2 = pd.concat([data2,first_days_data])
