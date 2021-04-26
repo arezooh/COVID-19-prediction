@@ -56,7 +56,7 @@ def main():
      # if weather stop is 0 its mean this is the first run of the main procedure but if weather stop is 1
      # its mean that downloading weather data is interrupted in the middle of the run and we must run the main
      # procedure again so we ignore the parts which are run before downloading weather data 
-    if weather_stop == 0:
+##    if weather_stop == 0:
         subprocess.call("python ./update_data/update_data.py f 0", shell=True)
         print('Data updated without weather')
         

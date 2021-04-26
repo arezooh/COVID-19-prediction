@@ -19,6 +19,10 @@ import medium
 
 csv_address = './csvFiles/'
 
+usa_address = './usa/'
+iran_address = './iran/'
+canada_address = './canada/'
+
 first_run = 1 if str(argv[1]) == 'f' else 0
 weather_flag = int(argv[2]) # decide for downloading weather data or not
 
@@ -42,6 +46,58 @@ def get_zip(url, save_path, chunk_size=128):
     with open(save_path, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
+            
+def generate_country_covid_data(address,country_name):
+    death = pd.read_csv(address+'international-covid-death-data.csv')
+    confirmed = pd.read_csv(address+'international-covid-confirmed-data.csv')
+    if country_name == 'Canada':
+        death=pd.DataFrame(death[death['Country/Region']=='Canada'].sum())
+    else:
+        death=death[death['Country/Region']==country_name].T
+    death=death.iloc[4:,:]
+    death.iloc[1:]=(death.iloc[1:].values-death.iloc[:-1].values)
+    death = death.reset_index()
+    death.columns = ['date','death']
+    death['death']= death['death'].astype(int)
+    if country_name == 'Canada':
+        confirmed=pd.DataFrame(confirmed[confirmed['Country/Region']=='Canada'].sum())
+    else:
+        confirmed=confirmed[confirmed['Country/Region']==country_name].T
+    confirmed=confirmed.iloc[4:,:]
+    confirmed.iloc[1:]=(confirmed.iloc[1:].values-confirmed.iloc[:-1].values)
+    confirmed = confirmed.reset_index()
+    confirmed.columns = ['date','confirmed']
+    confirmed['confirmed']= confirmed['confirmed'].astype(int)
+    confirmed_death = pd.merge(death,confirmed)
+    confirmed_death['country_code']=1
+    confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strptime(x,'%m/%d/%y'))
+    confirmed_death=confirmed_death.sort_values(by=['date'])
+    confirmed_death['date'] = confirmed_death['date'].apply(lambda x:datetime.datetime.strftime(x,'%y/%m/%d'))
+    return(confirmed_death)
+
+def country_aggregate(data):
+    all_columns = data.columns.values
+    mean_columns = []
+
+    for col in all_columns:
+        if col in ['precipitation', 'temperature','weekend']:
+            mean_columns.append(col)
+
+    mean_columns.append('date')
+    mean_data = data[mean_columns]
+    mean_data = mean_data.groupby(['date']).mean()
+    mean_data = mean_data.reset_index()
+
+    data = mean_data
+    data['country_code'] = 1
+    return(data)
+
+def mean_impute_feature(data,feature):
+    mean_df = data.groupby('county_fips').mean().reset_index()[['county_fips',feature]]
+    mean_df = mean_df.rename(columns={feature:feature + ' mean'})
+    data = pd.merge(data, mean_df, on = ['county_fips'], how = 'left')
+    data.loc[pd.isnull(data[feature]),feature] = data.loc[pd.isnull(data[feature]),feature + ' mean']
+    return(data)
 
 if __name__ == "__main__":
     
@@ -152,7 +208,7 @@ if __name__ == "__main__":
 #     tests=tests.drop_duplicates(subset=['date','state'])
 #     tests.to_csv(csv_address+'daily-state-test.csv', index=False)
     
-    ########################################################################## concat and prepare data
+    ######################################################################### concat and prepare data
     
     fix=pd.read_csv(csv_address+'fixed-data.csv')
 #     socialDistancing=pd.read_csv(csv_address+'socialDistancing.csv')
@@ -540,3 +596,85 @@ if __name__ == "__main__":
     data.to_csv(save_address+'full-temporal-data.csv', index=False)
 
     fix[['county_fips']].to_csv(save_address+'full-data-county-fips.csv',index=False)
+
+    ##################################################################################################################
+    ########################################## countries data ########################################################
+    ##################################################################################################################
+    
+    ############ usa country data
+    
+    us_data = data2.copy()
+    if weather_flag:
+        for col in ['temperature','precipitation']:
+            us_data = mean_impute_feature(us_data,col)
+        
+    us_country_data = country_aggregate(us_data)
+    
+    country_confirmed_death = generate_country_covid_data(csv_address,'US')
+    us_country_data=pd.merge(us_country_data,country_confirmed_death,how='left',on=['country_code','date'])
+    
+    mobility=pd.read_csv(csv_address+'Global_Mobility_Report.csv')
+    mobility = mobility[(mobility['country_region_code']=='US')&(pd.isna(mobility['sub_region_1']))]#.unique()
+    mobility=mobility[['date',
+           'retail_and_recreation_percent_change_from_baseline',
+           'grocery_and_pharmacy_percent_change_from_baseline',
+           'parks_percent_change_from_baseline',
+           'transit_stations_percent_change_from_baseline',
+           'workplaces_percent_change_from_baseline',
+           'residential_percent_change_from_baseline']]
+    mobility.columns=['date','Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
+    mobility.loc[:,'date'] = mobility['date'].apply(lambda x : datetime.datetime.strptime(x,'%Y-%m-%d'))
+    us_country_data.loc[:,'date'] = us_country_data['date'].apply(lambda x : datetime.datetime.strptime(x,'%y/%m/%d'))
+    us_country_data = pd.merge(us_country_data,mobility,how='left',on=['date'])
+    Start_date = us_country_data['date'].min()
+    End_date = min(mobility['date'].max(),us_country_data['date'].max())
+    us_country_data = us_country_data[us_country_data['date']>=Start_date]
+    us_country_data = us_country_data[us_country_data['date']<=End_date]
+    us_country_data.loc[:,'date'] = us_country_data['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
+    for col in mobility.columns:
+        us_country_data.loc[pd.isna(us_country_data[col]),col] = 0
+    if weather_flag:
+        us_country_data = us_country_data[['date','country_code','death','confirmed','weekend','precipitation','temperature','Retail','Grocery','Parks','Transit','Workplace','Residential']]
+    else:
+        us_country_data = us_country_data[['date','country_code','death','confirmed','weekend','Retail','Grocery','Parks','Transit','Workplace','Residential']]
+    us_country_data.to_csv(usa_address+'country_data.csv',index=False)
+    
+#     ############ iran country data
+    
+#     iran_country_data = generate_country_covid_data(csv_address, 'iran')
+#     iran_country_data['country_code'] = 1
+    
+#     iran_country_data.to_csv(iran_address+'country_data.csv',index=False)
+    
+    ############ canada country data
+    
+    canada_country_data = generate_country_covid_data(csv_address,'Canada')
+    canada_country_data['country_code'] = 1
+
+    mobility=pd.read_csv(csv_address+'Global_Mobility_Report.csv')
+    mobility = mobility[(mobility['country_region_code']=='CA')&(pd.isna(mobility['sub_region_1']))]#.unique()
+    mobility=mobility[['date',
+           'retail_and_recreation_percent_change_from_baseline',
+           'grocery_and_pharmacy_percent_change_from_baseline',
+           'parks_percent_change_from_baseline',
+           'transit_stations_percent_change_from_baseline',
+           'workplaces_percent_change_from_baseline',
+           'residential_percent_change_from_baseline']]
+    mobility.columns=['date','Retail', 'Grocery', 'Parks', 'Transit', 'Workplace', 'Residential']
+    mobility.loc[:,'date'] = mobility['date'].apply(lambda x : datetime.datetime.strptime(x,'%Y-%m-%d'))
+    canada_country_data.loc[:,'date'] = canada_country_data['date'].apply(lambda x : datetime.datetime.strptime(x,'%y/%m/%d'))
+    canada_country_data = pd.merge(canada_country_data,mobility,how='left',on=['date'])
+    Start_date = mobility['date'].min()
+    End_date = min(mobility['date'].max(),canada_country_data['date'].max())
+    canada_country_data = canada_country_data[canada_country_data['date']>=Start_date]
+    canada_country_data = canada_country_data[canada_country_data['date']<=End_date]
+    
+    canada_country_data['week-day']=canada_country_data['date']
+    canada_country_data['week-day']=canada_country_data['week-day'].apply(lambda x:x.weekday())
+    canada_country_data['week-day']=canada_country_data['week-day'].replace([0,1,2,3,4,5,6],[0,0,0,0,1,2,1])
+    canada_country_data.rename(columns={'week-day':'weekend'},inplace=True)
+    
+    canada_country_data.loc[:,'date'] = canada_country_data['date'].apply(lambda x : datetime.datetime.strftime(x,'%y/%m/%d'))
+    
+    canada_country_data = canada_country_data[['date','country_code','death','confirmed','weekend','Retail','Grocery','Parks','Transit','Workplace','Residential']]
+    canada_country_data.to_csv(canada_address+'country_data.csv',index=False)
